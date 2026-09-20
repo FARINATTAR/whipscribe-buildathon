@@ -1,0 +1,19 @@
+{
+  "name": "offstage",
+  "version": "0.2.0",
+  "description": "Offstage — bot-free desktop meeting recorder that transcribes through WhipScribe",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "author": "Farin Attar <farinattar91@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^10.0.0",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}

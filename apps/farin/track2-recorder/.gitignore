@@ -1,0 +1,8 @@
+node_modules/
+.env
+recordings/
+*.wav
+*.webm
+dist/
+run_log.txt
+*.log
