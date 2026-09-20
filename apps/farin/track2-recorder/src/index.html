@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://whipscribe.com https://calendar.google.com https://www.googleapis.com https://accounts.google.com;" />
+  <title>Offstage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="#12202a"/>
+          <path d="M7 18V10M11 20V8M15 17V11M19 19V9" stroke="#2dd4bf" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">Offstage</div>
+        <div class="logo-sub">No bot on the call</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <button class="nav-item active" data-view="dashboard" id="nav-dashboard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Today</span>
+      </button>
+      <button class="nav-item" data-view="calendar" id="nav-calendar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Calendar</span>
+      </button>
+      <button class="nav-item" data-view="record" id="nav-record">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+        <span>Record</span>
+      </button>
+      <button class="nav-item" data-view="library" id="nav-library">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Library</span>
+      </button>
+      <button class="nav-item" data-view="settings" id="nav-settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="privacy-chip">Audio stays here until you send it</div>
+      <div class="recording-indicator hidden" id="recording-indicator">
+        <div class="rec-dot"></div>
+        <span class="rec-label">On disk</span>
+        <span class="rec-timer" id="rec-timer">00:00</span>
+      </div>
+      <div class="app-version">v0.2.0 · WhipScribe</div>
+    </div>
+  </nav>
+
+  <main class="content" id="content">
+
+    <section class="view active" id="view-dashboard">
+      <div class="view-header">
+        <p class="eyebrow">Today</p>
+        <h1 class="view-title">The next call, without a bot</h1>
+        <p class="view-subtitle">Offstage records from this machine. WhipScribe transcribes only when you ask.</p>
+      </div>
+
+      <div id="recovery-banner" class="recovery-banner hidden" role="status"></div>
+
+      <div class="today-layout">
+        <article class="hero-meeting card" id="card-next-meeting">
+          <div class="empty-state" id="calendar-empty">
+            <p class="eyebrow">Next meeting</p>
+            <h2>Nothing on the board yet</h2>
+            <p>Connect a calendar or load sample meetings. Recording still works without one — files are just named from the clock.</p>
+            <button class="btn btn-outline" id="btn-connect-calendar">Open calendar</button>
+          </div>
+          <div class="meeting-preview hidden" id="next-meeting-info"></div>
+        </article>
+
+        <div class="today-side">
+          <div class="card card-compact" id="card-quick-record">
+            <h3>Ad-hoc capture</h3>
+            <p>No calendar event. Still crash-safe, still bot-free.</p>
+            <button class="btn btn-primary" id="btn-quick-record">
+              <span class="btn-dot"></span>
+              Record now
+            </button>
+          </div>
+          <div class="card card-compact" id="card-api-status">
+            <h3>WhipScribe</h3>
+            <div class="api-status" id="api-status">
+              <div class="status-dot status-unknown"></div>
+              <span>Checking…</span>
+            </div>
+          </div>
+          <div class="card card-compact" id="card-recent">
+            <h3>Recent on this machine</h3>
+            <div class="empty-state" id="library-empty">
+              <p>No files yet. A recording writes 1-second chunks to disk as you talk.</p>
+            </div>
+            <div class="recent-list hidden" id="recent-recordings-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-calendar">
+      <div class="view-header">
+        <p class="eyebrow">Calendar</p>
+        <h1 class="view-title">Arm the next room</h1>
+        <p class="view-subtitle">One click names the file from the event and starts recording. Nobody joins the call.</p>
+      </div>
+
+      <div class="empty-state-full" id="calendar-not-connected">
+        <h2>Bring your own calendar</h2>
+        <p>Paste a private iCal URL, or try sample meetings if you just want to see the arming flow.</p>
+
+        <div class="cal-connect-container">
+          <div class="cal-option-box">
+            <div class="cal-option-title">Try the flow</div>
+            <p class="cal-option-desc">Three made-up upcoming meetings so you can test 1-click arming without Google credentials.</p>
+            <button class="btn btn-primary" id="btn-load-demo-calendar">Load sample meetings</button>
+          </div>
+
+          <div class="cal-divider"><span>OR</span></div>
+
+          <div class="cal-option-box">
+            <div class="cal-option-title">Your Google Calendar (iCal)</div>
+            <p class="cal-option-desc">Secret iCal address from Calendar settings. Stored locally. No Google Cloud project.</p>
+            <div class="cal-input-row">
+              <input type="url" id="input-ical-url" class="cal-url-input" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" />
+              <button class="btn btn-outline" id="btn-sync-ical">Sync</button>
+            </div>
+            <details class="cal-help-details">
+              <summary>Where is the secret iCal address?</summary>
+              <ol class="cal-help-steps">
+                <li>Open calendar.google.com</li>
+                <li>Hover your calendar → Options → Settings and sharing</li>
+                <li>Integrate calendar → Secret address in iCal format</li>
+              </ol>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-content hidden" id="calendar-connected-view">
+        <div class="calendar-toolbar">
+          <div class="calendar-badge">
+            <div class="status-dot status-connected"></div>
+            <span id="calendar-status-text">Calendar synced</span>
+          </div>
+          <div class="calendar-actions">
+            <button class="btn btn-sm btn-outline" id="btn-refresh-calendar">Refresh</button>
+            <button class="btn btn-sm btn-ghost" id="btn-disconnect-calendar">Disconnect</button>
+          </div>
+        </div>
+        <div class="meetings-grid" id="meetings-list"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-record">
+      <div class="view-header">
+        <p class="eyebrow">Record</p>
+        <h1 class="view-title">Stay off the guest list</h1>
+        <p class="view-subtitle">System audio uses Windows loopback through Electron. Nothing is sent until you press Send to WhipScribe.</p>
+      </div>
+      <div class="recorder-container">
+        <div class="source-selector" id="source-selector" role="radiogroup" aria-label="Audio source">
+          <label class="source-option active" id="source-both">
+            <input type="radio" name="source" value="both" checked />
+            <span>Mic + room</span>
+          </label>
+          <label class="source-option" id="source-mic">
+            <input type="radio" name="source" value="mic" />
+            <span>Microphone</span>
+          </label>
+          <label class="source-option" id="source-system">
+            <input type="radio" name="source" value="system" />
+            <span>System only</span>
+          </label>
+        </div>
+        <p class="source-hint" id="source-hint">Mic plus what the computer plays (Meet, Zoom, Teams). No meeting bot.</p>
+
+        <div class="recorder-display">
+          <canvas class="waveform" id="waveform-canvas" width="600" height="120" aria-hidden="true"></canvas>
+          <div class="rec-time" id="recorder-time">00:00:00</div>
+          <div class="rec-file-name" id="recorder-filename">Ready — file will be named when you start</div>
+          <div class="crash-status" id="crash-status">Crash-safe: idle</div>
+        </div>
+
+        <div class="recorder-controls">
+          <button class="btn-control btn-record" id="btn-start-record" title="Start recording (Ctrl+R)" aria-label="Start recording">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+          </button>
+          <button class="btn-control btn-pause hidden" id="btn-pause-record" title="Pause" aria-label="Pause recording">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+          </button>
+          <button class="btn-control btn-stop hidden" id="btn-stop-record" title="Stop recording (Ctrl+S)" aria-label="Stop recording">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          </button>
+        </div>
+
+        <div class="post-recording hidden" id="post-recording">
+          <div class="post-recording-info">
+            <span class="post-filename" id="post-filename"></span>
+            <span class="post-duration" id="post-duration"></span>
+            <span class="post-size" id="post-size"></span>
+          </div>
+          <div class="job-progress hidden" id="job-progress">
+            <div class="job-progress-bar"><span id="job-progress-fill"></span></div>
+            <p id="job-progress-label">Queued…</p>
+          </div>
+          <div class="post-actions">
+            <button class="btn btn-primary" id="btn-transcribe">Send to WhipScribe</button>
+            <button class="btn btn-outline" id="btn-play-back">Play</button>
+            <button class="btn btn-ghost" id="btn-discard">Discard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-library">
+      <div class="view-header">
+        <div class="view-header-row">
+          <div>
+            <p class="eyebrow">Library</p>
+            <h1 class="view-title">On this machine</h1>
+            <p class="view-subtitle">Search titles and transcript text. Jump to the second when a transcript exists.</p>
+          </div>
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" placeholder="Search words you said…" id="library-search" />
+          </div>
+        </div>
+      </div>
+      <div class="library-list" id="library-list">
+        <div class="empty-state-full" id="library-no-files">
+          <h2>Empty shelf</h2>
+          <p>Record a meeting. If the app dies mid-call, Today will offer to salvage the chunks.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="view-header">
+        <p class="eyebrow">Settings</p>
+        <h1 class="view-title">Keys stay on this PC</h1>
+        <p class="view-subtitle">API key is encrypted with Windows DPAPI via Electron safeStorage.</p>
+      </div>
+      <div class="settings-groups">
+        <div class="settings-group">
+          <h3 class="settings-group-title">WhipScribe API</h3>
+          <div class="setting-row">
+            <label for="api-key-input">API Key</label>
+            <div class="input-group">
+              <input type="password" id="api-key-input" placeholder="Paste key from Account → API key" autocomplete="off" />
+              <button class="btn btn-sm btn-outline" id="btn-toggle-key">Show</button>
+              <button class="btn btn-sm btn-primary" id="btn-save-key">Save</button>
+            </div>
+            <small>Create one at <a href="#" id="link-api-keys">whipscribe.com/apis/keys</a>. Docs: the API has no free tier; a key needs a positive balance.</small>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group-title">Google Calendar</h3>
+          <div class="setting-row">
+            <label>Connection</label>
+            <div class="calendar-connection" id="calendar-connection-status">
+              <div class="status-dot status-disconnected"></div>
+              <span>Not connected</span>
+              <button class="btn btn-sm btn-outline" id="btn-settings-connect-calendar">Connect</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group-title">Recording</h3>
+          <div class="setting-row">
+            <label for="auto-transcribe">Send to WhipScribe when a recording stops</label>
+            <label class="toggle">
+              <input type="checkbox" id="auto-transcribe" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group-title">About</h3>
+          <div class="setting-row">
+            <label>Version</label>
+            <span class="setting-value">0.2.0</span>
+          </div>
+          <div class="setting-row">
+            <label>WhipScribe</label>
+            <a href="#" id="link-whipscribe" class="setting-value setting-link">whipscribe.com</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-transcript">
+      <div class="view-header">
+        <button class="btn btn-ghost btn-back" id="btn-back-to-library">Back</button>
+        <h1 class="view-title" id="transcript-title">Transcript</h1>
+        <p class="view-subtitle" id="transcript-meta"></p>
+        <div class="transcript-toolbar">
+          <button class="btn btn-sm btn-outline" id="btn-copy-transcript">Copy</button>
+          <button class="btn btn-sm btn-outline" id="btn-download-transcript">Download</button>
+        </div>
+      </div>
+      <audio id="transcript-audio" class="transcript-audio" controls></audio>
+      <div id="moments-panel" class="moments-panel hidden"></div>
+      <div class="transcript-container" id="transcript-container">
+        <div class="transcript-segments" id="transcript-segments"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="renderer.js"></script>
+</body>
+</html>
