@@ -6,6 +6,25 @@ let mainWindow = null;
 let tray = null;
 const isDev = process.argv.includes('--dev');
 
+// Load local .env if present (never checked into git)
+try {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+    for (const line of lines) {
+      const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+      if (match) {
+        const k = match[1];
+        let v = (match[2] || '').trim();
+        if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+          v = v.slice(1, -1);
+        }
+        if (!process.env[k]) process.env[k] = v;
+      }
+    }
+  }
+} catch { /* ignore */ }
+
 const recordingsDir = () => path.join(app.getPath('userData'), 'recordings');
 const sessionsDir = () => path.join(app.getPath('userData'), 'sessions');
 const storePath = () => path.join(app.getPath('userData'), 'config.json');
@@ -259,12 +278,17 @@ ipcMain.handle('store:set-encrypted', (_, key, value) => {
 ipcMain.handle('store:get-encrypted', (_, key) => {
   const store = getStore();
   const val = store[key];
-  if (!val) return null;
+  if (!val) {
+    if (key === 'whipscribe_api_key' && process.env.WHIPSCRIBE_API_KEY) {
+      return process.env.WHIPSCRIBE_API_KEY;
+    }
+    return null;
+  }
   if (!safeStorage.isEncryptionAvailable()) return val;
   try {
     return safeStorage.decryptString(Buffer.from(val, 'base64'));
   } catch {
-    return null;
+    return (key === 'whipscribe_api_key' && process.env.WHIPSCRIBE_API_KEY) ? process.env.WHIPSCRIBE_API_KEY : null;
   }
 });
 
