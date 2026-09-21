@@ -1,0 +1,13 @@
+{
+  "name": "candidatesync-track4",
+  "version": "1.0.0",
+  "description": "Automated Recruiter Interview to Airtable Candidate Scorecard via WhipScribe API",
+  "main": "runner.js",
+  "scripts": {
+    "start": "node runner.js",
+    "test": "node runner.js --demo"
+  },
+  "keywords": ["whipscribe", "recruiter", "airtable", "scorecard", "workflow"],
+  "author": "Farin Attar",
+  "license": "MIT"
+}

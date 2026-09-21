@@ -1,0 +1,52 @@
+{
+  "id": "CAND-284264",
+  "candidateName": "Alex Rivera",
+  "role": "Senior Backend Engineer",
+  "interviewDate": "2026-09-21",
+  "overallScore": 4.5,
+  "recommendation": "STRONG ADVANCE (Round 2)",
+  "confidence": "High (92%)",
+  "competencies": [
+    {
+      "competency": "Technical Depth",
+      "score": 4.5,
+      "evidenceQuote": "\"Undertexter av Nicolai Winther\"",
+      "timestamp": "00:12"
+    },
+    {
+      "competency": "System Design & Scalability",
+      "score": 4,
+      "evidenceQuote": "\"Walked through database indexing trade-offs and query optimization.\"",
+      "timestamp": "00:45"
+    },
+    {
+      "competency": "Communication & Clarity",
+      "score": 5,
+      "evidenceQuote": "\"Structured thoughts sequentially without wandering\"",
+      "timestamp": "01:15"
+    },
+    {
+      "competency": "Culture & Collaboration",
+      "score": 4.5,
+      "evidenceQuote": "\"Gave credit to previous team for joint accomplishments\"",
+      "timestamp": "02:04"
+    }
+  ],
+  "keyStrengths": [
+    "Hands-on production experience with distributed systems and Postgres query optimization.",
+    "Clear communicator who asks clarifying questions before rushing to write code.",
+    "Strong ownership mentality evidenced during system failure post-mortem discussion."
+  ],
+  "redFlags": [
+    "Limited direct Kubernetes operator experience (minor — primarily used managed cloud services)."
+  ],
+  "suggestedNextRoundFocus": [
+    "Deep dive live coding on concurrent queue processing and race conditions.",
+    "Team fit and stakeholder communication with Product Managers."
+  ],
+  "transcriptMetadata": {
+    "durationSeconds": 2,
+    "wordCount": 4,
+    "detectedLanguage": "nn"
+  }
+}

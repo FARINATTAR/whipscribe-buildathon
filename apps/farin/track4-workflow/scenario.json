@@ -1,0 +1,111 @@
+{
+  "name": "CandidateSync: WhipScribe to Airtable Candidate Scorecard",
+  "version": 1,
+  "description": "Automated pipeline that receives interview audio, transcribes via WhipScribe API with speaker diarization and word timestamps, extracts structured competency scores and evidence quotes, and creates a candidate scorecard in Airtable.",
+  "modules": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": "candidatesync_interview_drop",
+        "maxResults": 1
+      },
+      "metadata": {
+        "designer": { "x": 0, "y": 0, "name": "1. Interview Audio Drop" }
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendRequest",
+      "version": 3,
+      "parameters": {
+        "url": "https://whipscribe.com/api/v1/transcribe",
+        "method": "POST",
+        "headers": [
+          { "name": "X-API-Key", "value": "{{env.WHIPSCRIBE_API_KEY}}" },
+          { "name": "Content-Type", "value": "multipart/form-data" }
+        ],
+        "body": {
+          "source": "api",
+          "diarize": "true",
+          "word_timestamps": "true",
+          "file": "{{1.data}}"
+        }
+      },
+      "metadata": {
+        "designer": { "x": 220, "y": 0, "name": "2. WhipScribe Transcribe API" }
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {
+        "delay": 5
+      },
+      "metadata": {
+        "designer": { "x": 440, "y": 0, "name": "3. Await Audio Processing" }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendRequest",
+      "version": 3,
+      "parameters": {
+        "url": "https://whipscribe.com/api/v1/jobs/{{2.data.job_id}}/result?format=json",
+        "method": "GET",
+        "headers": [
+          { "name": "X-API-Key", "value": "{{env.WHIPSCRIBE_API_KEY}}" }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 660, "y": 0, "name": "4. Fetch Diarized Transcript" }
+      }
+    },
+    {
+      "id": 5,
+      "module": "openai:CreateChatCompletion",
+      "version": 1,
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a Senior Technical Recruiter. Evaluate this interview transcript against the role scorecard rubric. Output strict JSON with: candidateName, role, overallScore (1-5), recommendation (Advance/Hold/Reject), competencies (technical, problemSolving, communication, cultureFit each with score and exact evidence quote with timestamp), keyStrengths (bullets), and redFlags (bullets)."
+          },
+          {
+            "role": "user",
+            "content": "{{4.data.text}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 880, "y": 0, "name": "5. Structured Rubric Extraction" }
+      }
+    },
+    {
+      "id": 6,
+      "module": "airtable:ActionCreateRecord",
+      "version": 2,
+      "parameters": {
+        "base": "appCandidateScorecards",
+        "table": "tblInterviews",
+        "fields": {
+          "Candidate Name": "{{5.data.candidateName}}",
+          "Role": "{{5.data.role}}",
+          "Overall Score": "{{5.data.overallScore}}",
+          "Recommendation": "{{5.data.recommendation}}",
+          "Key Strengths": "{{5.data.keyStrengths}}",
+          "Red Flags": "{{5.data.redFlags}}",
+          "Evidence Quotes": "{{5.data.competencies}}",
+          "WhipScribe Job ID": "{{2.data.job_id}}",
+          "Status": "Decision Ready"
+        }
+      },
+      "metadata": {
+        "designer": { "x": 1100, "y": 0, "name": "6. Create Airtable Scorecard Card" }
+      }
+    }
+  ]
+}
