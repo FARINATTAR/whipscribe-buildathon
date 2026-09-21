@@ -6,9 +6,10 @@ Software engineer from Pune, India. B.E. Information Technology graduate (2026) 
 
 ## Tracks
 
-- **Track 0**: This introduction and my track record (see PR).
-- **Track 1**: UI bugs and proposals filed as issues; Challenge 01 mobile transcript redesign in `challenges/01-mobile-transcript/next/`.
-- **Track 2**: Desktop meeting recorder app (planned).
+- **Track 0**: This introduction and my track record (see PR #28).
+- **Track 1**: UI bugs and proposals filed as issues (#33, #34, #36, #37, #38, #39).
+- **Track 2**: [Offstage](https://github.com/neugence/whipscribe-buildathon/pull/44) — bot-free desktop meeting recorder with crash-safe audio & WhipScribe transcription (PR #44).
+- **Track 4**: [CandidateSync](https://github.com/neugence/whipscribe-buildathon/pull/80) — automated recruiter interview to Airtable scorecard pipeline via WhipScribe API diarization & structured rubric extraction (PR #80).
 
 ## How to reach me
 
