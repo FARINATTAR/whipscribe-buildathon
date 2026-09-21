@@ -3,3 +3,7 @@
 .env
 *.local.json
 node_modules/
+run.bat
+*.bat
+image.png
+

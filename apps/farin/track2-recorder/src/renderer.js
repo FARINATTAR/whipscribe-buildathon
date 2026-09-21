@@ -3,7 +3,13 @@ const WHIP = 'https://whipscribe.com/api/v1';
 const navItems = document.querySelectorAll('.nav-item');
 const views = document.querySelectorAll('.view');
 
-function navigateTo(viewName) {
+let previousView = 'dashboard';
+
+function navigateTo(viewName, track = true) {
+  const current = document.querySelector('.view.active')?.id?.replace('view-', '') || 'dashboard';
+  if (track && current !== viewName) {
+    previousView = current;
+  }
   views.forEach((v) => v.classList.remove('active'));
   navItems.forEach((n) => n.classList.remove('active'));
   document.getElementById(`view-${viewName}`)?.classList.add('active');
@@ -13,6 +19,17 @@ function navigateTo(viewName) {
 
 navItems.forEach((item) => {
   item.addEventListener('click', () => navigateTo(item.dataset.view));
+});
+
+document.querySelectorAll('.btn-back-nav').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.target || previousView || 'dashboard';
+    navigateTo(target, false);
+  });
+});
+
+document.getElementById('btn-back-to-library')?.addEventListener('click', () => {
+  navigateTo('library', false);
 });
 
 document.getElementById('btn-quick-record')?.addEventListener('click', () => navigateTo('record'));
@@ -179,8 +196,11 @@ function elapsedSeconds() {
 
 function updateTimerDisplay() {
   const elapsed = elapsedSeconds();
-  recTimeDisplay.textContent = formatTimeHMS(elapsed);
+  const formattedHMS = formatTimeHMS(elapsed);
+  recTimeDisplay.textContent = formattedHMS;
   if (recTimerSidebar) recTimerSidebar.textContent = formatMMSS(elapsed);
+  const hudTime = document.getElementById('hud-time');
+  if (hudTime) hudTime.textContent = formattedHMS;
 }
 
 function stopCurrentPlayback() {
@@ -201,6 +221,140 @@ function stopCurrentPlayback() {
     b.textContent = 'Play';
   });
 }
+
+/* ── Pre-Call Dual-Track Soundcheck ──────────────────────── */
+let soundcheckRunning = false;
+let soundcheckAnim = null;
+
+async function runSoundcheck() {
+  if (soundcheckRunning) return;
+  const btn = document.getElementById('btn-run-soundcheck');
+  const verdict = document.getElementById('soundcheck-verdict');
+  const micFill = document.getElementById('mic-meter-fill');
+  const sysFill = document.getElementById('sys-meter-fill');
+  const micLabel = document.getElementById('mic-level-label');
+  const sysLabel = document.getElementById('sys-level-label');
+
+  soundcheckRunning = true;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Checking (5s)…';
+  }
+  if (verdict) {
+    verdict.className = 'soundcheck-verdict';
+    verdict.textContent = 'Speak into your microphone and play audio to verify both channels…';
+  }
+
+  let micStream = null;
+  let sysStream = null;
+  let audioCtx = null;
+
+  try {
+    audioCtx = new AudioContext();
+    micStream = await getMicStream().catch(() => null);
+    sysStream = await getLoopbackStream().catch(() => null);
+
+    let micPeak = 0;
+    let sysPeak = 0;
+
+    const micAnalyser = micStream ? audioCtx.createAnalyser() : null;
+    if (micAnalyser && micStream) {
+      micAnalyser.fftSize = 256;
+      audioCtx.createMediaStreamSource(micStream).connect(micAnalyser);
+    }
+
+    const sysAnalyser = sysStream ? audioCtx.createAnalyser() : null;
+    if (sysAnalyser && sysStream) {
+      sysAnalyser.fftSize = 256;
+      audioCtx.createMediaStreamSource(sysStream).connect(sysAnalyser);
+    }
+
+    const micData = new Uint8Array(128);
+    const sysData = new Uint8Array(128);
+    const startTime = Date.now();
+
+    function pollSoundcheck() {
+      if (!soundcheckRunning) return;
+
+      if (micAnalyser) {
+        micAnalyser.getByteFrequencyData(micData);
+        let sum = 0;
+        for (let i = 0; i < micData.length; i++) sum += micData[i];
+        const avg = sum / micData.length;
+        const pct = Math.min(100, Math.round((avg / 128) * 100));
+        if (micFill) micFill.style.width = `${pct}%`;
+        if (micLabel) micLabel.textContent = `${pct}%`;
+        if (pct > micPeak) micPeak = pct;
+      } else {
+        if (micFill) micFill.style.width = '0%';
+        if (micLabel) micLabel.textContent = 'Unavailable';
+      }
+
+      if (sysAnalyser) {
+        sysAnalyser.getByteFrequencyData(sysData);
+        let sum = 0;
+        for (let i = 0; i < sysData.length; i++) sum += sysData[i];
+        const avg = sum / sysData.length;
+        const pct = Math.min(100, Math.round((avg / 128) * 100));
+        if (sysFill) sysFill.style.width = `${pct}%`;
+        if (sysLabel) sysLabel.textContent = `${pct}%`;
+        if (pct > sysPeak) sysPeak = pct;
+      } else {
+        if (sysFill) sysFill.style.width = '0%';
+        if (sysLabel) sysLabel.textContent = 'Loopback idle';
+      }
+
+      if (Date.now() - startTime < 5000) {
+        soundcheckAnim = requestAnimationFrame(pollSoundcheck);
+      } else {
+        finishSoundcheck(micPeak, sysPeak);
+      }
+    }
+
+    soundcheckAnim = requestAnimationFrame(pollSoundcheck);
+
+    function finishSoundcheck(micP, sysP) {
+      soundcheckRunning = false;
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Run Soundcheck again';
+      }
+      if (micStream) micStream.getTracks().forEach((t) => t.stop());
+      if (sysStream) sysStream.getTracks().forEach((t) => t.stop());
+      if (audioCtx) audioCtx.close();
+
+      if (!verdict) return;
+      if (micP > 4 && sysP > 4) {
+        verdict.className = 'soundcheck-verdict verdict-success';
+        verdict.textContent = '🟢 Both live: Microphone & Room audio active. Ready to record with zero silence risk.';
+      } else if (micP > 4) {
+        verdict.className = 'soundcheck-verdict verdict-warn';
+        verdict.textContent = '🟡 Mic live only: Room audio silent. (Enable "Share system audio" or check loopback if in a meeting).';
+      } else if (sysP > 4) {
+        verdict.className = 'soundcheck-verdict verdict-warn';
+        verdict.textContent = '🟡 Room audio live: Microphone silent. Check microphone permissions.';
+      } else {
+        verdict.className = 'soundcheck-verdict verdict-error';
+        verdict.textContent = '🔴 No audio signal detected. Speak closer or check audio devices before starting.';
+      }
+    }
+  } catch (err) {
+    soundcheckRunning = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Run 5s Soundcheck';
+    }
+    if (verdict) {
+      verdict.className = 'soundcheck-verdict verdict-warn';
+      verdict.textContent = `Soundcheck notice: ${err.message}`;
+    }
+    if (micStream) micStream.getTracks().forEach((t) => t.stop());
+    if (sysStream) sysStream.getTracks().forEach((t) => t.stop());
+    if (audioCtx) audioCtx.close();
+  }
+}
+
+document.getElementById('btn-run-soundcheck')?.addEventListener('click', runSoundcheck);
 
 async function getMicStream() {
   return navigator.mediaDevices.getUserMedia({
@@ -350,6 +504,13 @@ async function startRecording() {
     postRecording.classList.add('hidden');
     document.getElementById('job-progress')?.classList.add('hidden');
 
+    const hud = document.getElementById('focus-hud');
+    if (hud) {
+      hud.classList.remove('hidden');
+      const hudName = document.getElementById('hud-meeting-name');
+      if (hudName) hudName.textContent = armedMeeting?.title || filename;
+    }
+
     showToast('Recording — chunks writing to disk every second', 'info');
   } catch (err) {
     console.error(err);
@@ -378,6 +539,7 @@ function stopRecording() {
   btnStop.classList.add('hidden');
   recIndicator.classList.add('hidden');
   recTimeDisplay.classList.remove('recording');
+  document.getElementById('focus-hud')?.classList.add('hidden');
   drawIdleWaveform();
 }
 
@@ -387,15 +549,22 @@ function pauseRecording() {
     pauseStartedAt = Date.now();
     btnPause.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
     crashStatus.textContent = 'Paused — last second already on disk';
+    const hudPause = document.getElementById('btn-hud-pause');
+    if (hudPause) hudPause.textContent = 'Resume';
     showToast('Paused', 'info');
   } else if (mediaRecorder?.state === 'paused') {
     mediaRecorder.resume();
     if (pauseStartedAt) pausedAccumulated += Date.now() - pauseStartedAt;
     pauseStartedAt = null;
     btnPause.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`;
+    const hudPause = document.getElementById('btn-hud-pause');
+    if (hudPause) hudPause.textContent = 'Pause';
     showToast('Resumed', 'info');
   }
 }
+
+document.getElementById('btn-hud-pause')?.addEventListener('click', () => pauseRecording());
+document.getElementById('btn-hud-stop')?.addEventListener('click', () => stopRecording());
 
 async function handleRecordingComplete() {
   stopCurrentPlayback();
@@ -680,6 +849,36 @@ function renderTranscript(payload) {
     : (payload.jobId || '');
 
   attachTranscriptAudio(payload.filename);
+
+  // Populate Recap Theater Seek Chips
+  const chipsContainer = document.getElementById('moment-chips');
+  if (chipsContainer) {
+    chipsContainer.innerHTML = '';
+    const startChip = document.createElement('button');
+    startChip.className = 'chip-seek';
+    startChip.textContent = '⏱️ [00:00] Meeting start';
+    startChip.onclick = () => seekTranscript(0);
+    chipsContainer.appendChild(startChip);
+
+    if (data.segments && data.segments.length > 0) {
+      let lastSpk = null;
+      let count = 0;
+      data.segments.forEach((seg) => {
+        if (count >= 6) return;
+        if (seg.speaker !== lastSpk && seg.text && seg.text.trim().length > 8) {
+          lastSpk = seg.speaker;
+          count++;
+          const chip = document.createElement('button');
+          chip.className = 'chip-seek';
+          const cleanText = seg.text.trim().replace(/^["']|["']$/g, '');
+          const snippet = cleanText.length > 28 ? cleanText.slice(0, 26) + '…' : cleanText;
+          chip.textContent = `🗣️ [${formatMMSS(seg.start)}] ${seg.speaker || 'Speaker'}: "${snippet}"`;
+          chip.onclick = () => seekTranscript(Number(seg.start) || 0);
+          chipsContainer.appendChild(chip);
+        }
+      });
+    }
+  }
 
   if (!data.segments || data.segments.length === 0) {
     container.innerHTML = `<p class="empty-copy">${escapeHtml(data.suggestion || 'No transcript segments.')}</p>`;

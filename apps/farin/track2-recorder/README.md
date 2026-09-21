@@ -48,14 +48,17 @@ Submit uses `POST /api/v1/transcribe` with `source=recording`, `diarize=true`, `
 - [x] Distinct product: Offstage (bot-free), WhipScribe is the transcription engine
 - [x] Today view centred on the next meeting, not a four-card admin dashboard
 - [x] Calendar arming (iCal or labelled samples) with live “starts in…” copy
+- [x] Pre-call dual-track soundcheck: 5s test with live Mic & Room audio meters and verdict (never tape silence)
+- [x] Focus HUD: Compact top status widget with pulsing indicator, timer, and quick controls while recording
 - [x] Microphone recording; Mic+room / system attempts Windows loopback via `desktopCapturer`, then getDisplayMedia share-audio if loopback is empty
 - [x] Crash-safe 1-second chunks written to `userData/sessions/` as they arrive
 - [x] Recover interrupted sessions on next launch
 - [x] Pause freezes the timer; discard deletes the file
 - [x] Real WhipScribe upload / poll / JSON transcript (own account only)
-- [x] Click a timestamp or a hook candidate to seek the local audio
+- [x] Recap Theater: Local tape receipt card + clickable moment seek chips that jump audio playback to exact second
 - [x] Library search over filenames **and** transcript text
-- [x] Encrypted API key, keyboard shortcuts (`Ctrl+R` / `Ctrl+S`), tray start/stop
+- [x] Clear back navigation across all views
+- [x] Encrypted API key (Windows DPAPI via Electron safeStorage), keyboard shortcuts (`Ctrl+R` / `Ctrl+S`), tray start/stop
 
 ## What does not work yet
 

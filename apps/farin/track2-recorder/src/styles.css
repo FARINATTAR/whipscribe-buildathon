@@ -1277,3 +1277,257 @@ button.segment-time:hover, button.segment-time:focus {
 @media (max-width: 960px) {
   .today-layout { grid-template-columns: 1fr; }
 }
+
+/* ── Back Navigation Buttons ──────────────────────────────── */
+.btn-back-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  transition: all var(--duration) var(--ease);
+}
+.btn-back-nav:hover {
+  color: var(--accent);
+  border-color: var(--accent-glow);
+  background: rgba(45,212,191,0.08);
+}
+
+/* ── Pre-Call Dual-Track Soundcheck ──────────────────────── */
+.soundcheck-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.soundcheck-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.soundcheck-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge-accent {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(45,212,191,0.15);
+  color: var(--accent);
+}
+.soundcheck-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.soundcheck-meters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.meter-channel-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.meter-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #38bdf8);
+  border-radius: 99px;
+  transition: width 80ms ease-out;
+}
+.soundcheck-verdict {
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border-left: 3px solid var(--accent);
+}
+.soundcheck-verdict.verdict-success {
+  border-left-color: var(--success);
+  color: #a7f3d0;
+}
+.soundcheck-verdict.verdict-warn {
+  border-left-color: var(--warning);
+  color: #fde68a;
+}
+.soundcheck-verdict.verdict-error {
+  border-left-color: var(--error);
+  color: #fca5a5;
+}
+
+/* ── Focus HUD ─────────────────────────────────────────────── */
+.focus-hud {
+  position: sticky;
+  top: 16px;
+  margin: 0 auto 20px auto;
+  max-width: 680px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: rgba(18, 24, 31, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  z-index: 100;
+  animation: slideDown 200ms var(--ease);
+}
+@keyframes slideDown {
+  from { transform: translateY(-12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hud-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--record-red);
+  box-shadow: 0 0 10px var(--record-red);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+.hud-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hud-timer {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.hud-meters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hud-meter-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.hud-bar {
+  width: 44px;
+  height: 6px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.hud-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 80ms ease-out;
+}
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Trust Receipt ─────────────────────────────────────────── */
+.trust-receipt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(18, 32, 42, 0.45);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+.receipt-icon {
+  color: var(--accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.receipt-body strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.receipt-body p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ── Recap Theater ─────────────────────────────────────────── */
+.recap-theater {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.theater-chips-section {
+  margin-top: 12px;
+}
+.theater-chips-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.moment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip-seek {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+}
+.chip-seek:hover {
+  border-color: var(--accent);
+  background: rgba(45,212,191,0.1);
+  color: var(--accent);
+}
