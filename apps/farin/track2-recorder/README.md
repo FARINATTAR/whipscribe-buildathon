@@ -88,6 +88,40 @@ npm start
 - **Multi-monitor Focus HUD auto-docking**: Works on primary display; multi-screen snapping left for next iteration.
 - **Automatic cloud folder synchronization**: Transcripts and recordings remain local-first by default for maximum data privacy.
 
+## System Architecture
+
+```mermaid
+flowchart TD
+    subgraph PreCall["1. Zero-Bot Pre-Call Layer"]
+        Cal["iCal Feed / Calendar Engine"] -->|Auto Event Match| Name["Deterministic File Naming & Countdown"]
+        Check["5-Second Dual Soundcheck"] -->|Hardware Probe| Meters["Live Mic & System Audio Meters"]
+    end
+
+    subgraph Pipeline["2. Dual-Stream Audio Engine"]
+        Mic["Microphone Input"] --> Mix["Web Audio Context + ChannelMerger"]
+        Loop["Windows WASAPI Loopback"] --> Mix
+        Mix --> Enc["16 kHz Mono WebM / Opus Stream"]
+        Enc --> HUD["Focus HUD (Floating Mini-Pill)"]
+    end
+
+    subgraph Resilience["3. Crash-Safe Persistence"]
+        Enc -->|IPC Continuous Chunk Stream| Stream["fs.createWriteStream"]
+        Stream -->|1-Second Disk Flush| Disk[("Local Storage: userData/sessions/")]
+        Disk -.->|Power / OS Crash Detection| Recovery["Auto-Recovery Sentinel on Next Launch"]
+    end
+
+    subgraph Intelligence["4. WhipScribe Cloud Engine"]
+        Disk -->|POST /api/v1/transcribe| API["WhipScribe API (Diarization + Word Timestamps)"]
+        API --> JSON["Structured Speaker Transcript"]
+        JSON --> Player["Interactive Recap Theater (Jump-to-Second Playback)"]
+        JSON --> Lib["Local Fuzzy-Searchable Meeting Library"]
+    end
+
+    PreCall --> Pipeline
+    Pipeline --> Resilience
+    Resilience --> Intelligence
+```
+
 ---
 
 ## Architecture decisions worth noting
