@@ -103,13 +103,13 @@ flowchart TD
     A[Interview Audio File] --> B[WhipScribe API Engine]
     
     subgraph Deterministic Boundary
-        B --> C[Speaker Separation: Recruiter vs Candidate]
-        C --> D[Timestamp Token Indexing: 00:04, 00:12, 00:45]
+        B --> C["Speaker Separation: Recruiter vs Candidate"]
+        C --> D["Timestamp Token Indexing: 00:04, 00:12, 00:45"]
         D --> E[Idempotency Check via Audio SHA-256]
     end
     
     subgraph AI Reasoning Engine
-        E --> F[Role Rubric Alignment: Senior Backend]
+        E --> F["Role Rubric Alignment: Senior Backend"]
         F --> G[Verbatim Quote Selection for Each Competency]
         G --> H[Synthesize Strengths & Watchout Flags]
     end
@@ -119,14 +119,6 @@ flowchart TD
         I -->|Valid| J[(Airtable / Ashby Scorecard Base)]
         I -->|Malformed| K[Schema Repair Fallback / Alert Recruiter]
     end
-
-    classDef default fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#ffffff;
-    classDef det fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ffffff;
-    classDef ai fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#ffffff;
-    classDef out fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffffff;
-    class C,D,E det;
-    class F,G,H ai;
-    class I,J,K out;
 ```
 
 | Layer | Responsibility | Why it's handled this way |
