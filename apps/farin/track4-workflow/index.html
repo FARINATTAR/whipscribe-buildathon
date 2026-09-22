@@ -3,24 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CandidateSync — Live Candidate Scorecard | WhipScribe Track 4</title>
+  <title>CandidateSync — Interview Scorecard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f17;
-      --card-bg: rgba(22, 30, 46, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.25);
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --rose: #f43f5e;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Plus Jakarta Sans', sans-serif;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --surface-hover: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --accent: #2563eb;
+      --accent-tint: #eff6ff;
+      --success: #059669;
+      --success-tint: #ecfdf5;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
     }
 
     * {
@@ -31,747 +36,778 @@
 
     body {
       background-color: var(--bg);
-      background-image: 
-        radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-        radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
-      color: var(--text-main);
-      font-family: var(--sans);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 36px 48px;
       min-height: 100vh;
-      padding: 28px;
-      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      max-width: 1320px;
+      max-width: 1240px;
       margin: 0 auto;
     }
 
-    /* Top Nav */
+    /* Minimalist Top Nav */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
       margin-bottom: 28px;
     }
 
-    .brand {
+    .nav-left {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       gap: 12px;
     }
 
-    .logo-badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.25rem;
-      box-shadow: 0 4px 14px var(--accent-glow);
-    }
-
-    .brand h1 {
-      font-size: 1.35rem;
+    .app-title {
+      font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: -0.02em;
+      color: var(--text-primary);
     }
 
-    .brand .subtitle {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .nav-divider {
+      color: var(--border-strong);
+      font-weight: 300;
+    }
+
+    .candidate-tagline {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
       font-weight: 500;
     }
 
-    .header-actions {
+    .nav-right {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
+      font-size: 0.8rem;
     }
 
-    .badge-pill {
+    .api-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
+      color: var(--success);
       font-weight: 600;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
+      font-size: 0.78rem;
+      background: var(--success-tint);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #d1fae5;
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
+    .api-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 8px var(--emerald);
+      background: var(--success);
     }
 
-    .btn-run {
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      color: #fff;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.85rem;
+    .btn-quiet {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text-secondary);
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: 500;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 14px var(--accent-glow);
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-sm);
     }
 
-    .btn-run:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    .btn-quiet:hover {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+      background: var(--surface-subtle);
     }
 
     /* Main Grid */
-    .grid {
+    .layout-grid {
       display: grid;
       grid-template-columns: 460px 1fr;
       gap: 28px;
+      align-items: start;
     }
 
     @media (max-width: 1024px) {
-      .grid {
+      .layout-grid {
         grid-template-columns: 1fr;
       }
     }
 
     /* Panels */
     .panel {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
     }
 
     .panel-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--card-border);
+      background: #fafafa;
     }
 
-    .panel-title {
-      font-size: 1rem;
+    .panel-heading {
+      font-size: 0.8rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
     }
 
-    /* Audio Player Component */
-    .audio-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .audio-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .audio-meta h4 {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .audio-meta span {
-      font-size: 0.75rem;
+    .panel-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
       color: var(--text-muted);
-      font-family: var(--mono);
     }
 
-    .waveform-mock {
-      height: 40px;
+    /* Audio Player Bar */
+    .audio-player-bar {
+      padding: 14px 22px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 3px;
-      padding: 4px 0;
-    }
-
-    .bar {
-      flex: 1;
-      background: rgba(99, 102, 241, 0.4);
-      border-radius: 2px;
-      transition: height 0.2s ease, background-color 0.2s ease;
-    }
-
-    .bar.active {
-      background: #818cf8;
-    }
-
-    /* Transcript Feed */
-    .transcript-stream {
-      max-height: 520px;
-      overflow-y: auto;
-      padding-right: 6px;
-      display: flex;
-      flex-direction: column;
       gap: 14px;
     }
 
-    .transcript-stream::-webkit-scrollbar {
-      width: 5px;
+    .play-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--text-primary);
+      color: #ffffff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: opacity 0.15s ease;
     }
 
-    .transcript-stream::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
+    .play-btn:hover {
+      opacity: 0.9;
+    }
+
+    .player-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .player-filename {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-time {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .progress-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 6px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: width 0.2s ease;
+    }
+
+    /* Transcript Stream */
+    .transcript-scroll {
+      max-height: 580px;
+      overflow-y: auto;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--surface);
+    }
+
+    .transcript-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .transcript-scroll::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
     }
 
     .turn {
       padding: 12px 14px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      transition: background 0.15s ease;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
     }
 
     .turn:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--surface-subtle);
     }
 
-    .turn.recruiter {
-      border-left: 3px solid #6366f1;
+    .turn.active-target {
+      background: var(--accent-tint);
+      border-color: #bfdbfe;
     }
 
-    .turn.candidate {
-      border-left: 3px solid var(--emerald);
-      background: rgba(16, 185, 129, 0.03);
-    }
-
-    .turn-meta {
+    .turn-top {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
       font-size: 0.75rem;
-      margin-bottom: 6px;
     }
 
-    .speaker-tag {
+    .speaker-name {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .speaker-name.candidate {
+      color: var(--text-primary);
       font-weight: 700;
-      color: #cbd5e1;
     }
 
-    .turn.recruiter .speaker-tag {
-      color: #a5b4fc;
+    .turn-time {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-subtle);
     }
 
-    .turn.candidate .speaker-tag {
-      color: #6ee7b7;
-    }
-
-    .timestamp {
-      font-family: var(--mono);
-      color: var(--text-muted);
-      cursor: pointer;
-      text-decoration: underline;
-      text-decoration-style: dotted;
-    }
-
-    .timestamp:hover {
-      color: #fff;
-    }
-
-    .turn-text {
+    .turn-dialogue {
       font-size: 0.85rem;
-      color: #e2e8f0;
-      line-height: 1.45;
+      color: #334155;
+      line-height: 1.55;
     }
 
     /* Scorecard Panel */
-    .candidate-hero {
+    .scorecard-content {
+      padding: 24px;
+    }
+
+    .candidate-header-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 24px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 22px;
     }
 
-    .cand-info h2 {
-      font-size: 1.5rem;
-      font-weight: 800;
+    .cand-title-group h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
       letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 4px;
     }
 
-    .cand-role {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .cand-meta-line {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .verdict-box {
+    .verdict-column {
       text-align: right;
     }
 
-    .verdict-tag {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 8px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      color: #34d399;
-      font-weight: 800;
-      font-size: 0.85rem;
-      letter-spacing: 0.02em;
+    .verdict-state {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--success);
+      margin-bottom: 1px;
     }
 
-    .score-headline {
-      font-size: 1.4rem;
-      font-weight: 800;
-      font-family: var(--mono);
-      margin-top: 4px;
-      color: #fff;
+    .verdict-number {
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
     }
 
-    .score-headline span {
-      font-size: 0.85rem;
+    .verdict-number span {
+      font-size: 0.8rem;
+      font-weight: 400;
       color: var(--text-muted);
     }
 
-    /* Competencies Grid */
-    .rubric-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 768px) {
-      .rubric-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .rubric-card {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .rubric-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .rubric-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #e2e8f0;
-    }
-
-    .rubric-score {
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 0.85rem;
-      padding: 2px 8px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .score-bar-bg {
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-
-    .score-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #6366f1, #10b981);
-      border-radius: 3px;
-    }
-
-    .evidence-quote {
+    /* Competency Rows: Clean Document / Table Style */
+    .section-label {
       font-size: 0.78rem;
-      color: #cbd5e1;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 8px 10px;
-      border-radius: 6px;
-      border-left: 2px solid var(--accent);
-      line-height: 1.4;
-    }
-
-    .quote-sec {
-      font-family: var(--mono);
-      color: #818cf8;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-
-    /* Strengths & Red Flags */
-    .breakdown-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 768px) {
-      .breakdown-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .list-card {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .list-card h4 {
-      font-size: 0.85rem;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
-    .list-card.strengths h4 {
-      color: #34d399;
-    }
-
-    .list-card.flags h4 {
-      color: #fb7185;
-    }
-
-    .bullet-list {
-      list-style: none;
+    .competency-table {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      margin-bottom: 24px;
     }
 
-    .bullet-list li {
-      font-size: 0.8rem;
-      color: #cbd5e1;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      line-height: 1.4;
+    .rubric-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .bullet-list li::before {
-      content: '•';
-      color: var(--text-muted);
-      font-weight: bold;
+    .rubric-row:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
     }
 
-    /* Action bar */
-    .airtable-sync-bar {
+    .rubric-row-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px 18px;
-      border-radius: 12px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      margin-bottom: 6px;
     }
 
-    .sync-status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.85rem;
+    .rubric-name {
+      font-size: 0.88rem;
       font-weight: 600;
+      color: var(--text-primary);
     }
 
-    .btn-airtable {
-      background: #fcb400;
-      color: #111;
+    .rubric-rating {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .rubric-quote {
+      font-size: 0.82rem;
+      color: #334155;
+      background: #f8fafc;
+      border-left: 3px solid var(--accent);
+      padding: 8px 12px;
+      border-radius: 0 4px 4px 0;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+
+    .jump-link {
+      background: transparent;
       border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.8rem;
+      padding: 0;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: opacity 0.2s;
+      gap: 4px;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.15s ease;
     }
 
-    .btn-airtable:hover {
-      opacity: 0.9;
+    .jump-link:hover {
+      color: #1d4ed8;
+    }
+
+    /* Observations Grid */
+    .observations-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 680px) {
+      .observations-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .obs-card {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+    }
+
+    .obs-card h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .obs-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .obs-card li {
+      font-size: 0.8rem;
+      color: #334155;
+      line-height: 1.45;
+      position: relative;
+      padding-left: 12px;
+    }
+
+    .obs-card li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* Footer: Airtable & JSON links */
+    .scorecard-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .foot-link {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .foot-link:hover {
+      color: var(--text-primary);
     }
   </style>
 </head>
 <body>
 
   <div class="container">
+    <!-- Minimalist Light Header -->
     <header>
-      <div class="brand">
-        <div class="logo-badge">⚡</div>
-        <div>
-          <h1>CandidateSync</h1>
-          <div class="subtitle">WhipScribe Track 4 • Automated Recruiter Interview to Scorecard Pipeline</div>
-        </div>
+      <div class="nav-left">
+        <span class="app-title">CandidateSync</span>
+        <span class="nav-divider">/</span>
+        <span class="candidate-tagline">Alex Rivera (Senior Backend Screening)</span>
       </div>
-      <div class="header-actions">
-        <div class="badge-pill">
-          <span class="status-dot"></span>
-          WhipScribe API v1 Connected
-        </div>
-        <button class="btn-run" onclick="triggerSync()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-          Re-Run Pipeline
-        </button>
+      <div class="nav-right">
+        <span class="api-badge">WhipScribe API Verified</span>
+        <button class="btn-quiet" onclick="refreshAnalysis()">Re-run extraction</button>
       </div>
     </header>
 
-    <div class="grid">
-      <!-- Left: Audio & Diarized Transcript -->
+    <!-- Main Workspace Grid -->
+    <div class="layout-grid">
+      
+      <!-- Left Column: Interview Recording & Transcript -->
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-            Interview Recording & Diarization
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--mono);">3 speakers</span>
+          <span class="panel-heading">Interview Recording</span>
+          <span class="panel-meta">2 speakers diarized</span>
         </div>
 
-        <div class="audio-card">
-          <div class="audio-header">
-            <div class="audio-meta">
-              <h4>screening_alex_rivera.wav</h4>
-              <span>32:15 • 16kHz Mono • WebM/Opus</span>
+        <!-- Audio Player Strip -->
+        <div class="audio-player-bar">
+          <button class="play-btn" id="playBtn" onclick="togglePlayback()">▶</button>
+          <div class="player-details">
+            <div class="player-filename">alex_rivera_screening.wav</div>
+            <div class="player-time" id="timerDisplay">00:00 / 23:24</div>
+            <div class="progress-track" onclick="seekProgress(event)">
+              <div class="progress-fill" id="progressFill"></div>
             </div>
-            <button id="playBtn" style="background:#6366f1; border:none; color:#fff; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="togglePlay()">
-              ▶
-            </button>
           </div>
-          <div class="waveform-mock" id="waveform"></div>
         </div>
 
-        <div class="transcript-stream">
-          <div class="turn recruiter">
-            <div class="turn-meta">
-              <span class="speaker-tag">Priya (Recruiter)</span>
-              <span class="timestamp">[00:04]</span>
+        <!-- Dialogue Turns -->
+        <div class="transcript-scroll" id="transcriptScroll">
+          <div class="turn" id="turn-0">
+            <div class="turn-top">
+              <span class="speaker-name">Priya (Recruiter)</span>
+              <span class="turn-time">00:04</span>
             </div>
-            <div class="turn-text">Thanks for taking the time, Alex! Let's start with your recent backend work at your current startup. Walk me through the architecture of your distributed worker queue.</div>
+            <div class="turn-dialogue">
+              Thanks for taking the time, Alex! Let's start with your recent backend work at your current startup. Walk me through the architecture of your distributed worker queue.
+            </div>
           </div>
 
-          <div class="turn candidate">
-            <div class="turn-meta">
-              <span class="speaker-tag">Alex Rivera (Candidate)</span>
-              <span class="timestamp" onclick="highlightEvidence('00:12')">[00:12]</span>
+          <div class="turn" id="turn-1">
+            <div class="turn-top">
+              <span class="speaker-name candidate">Alex Rivera (Candidate)</span>
+              <span class="turn-time">00:12</span>
             </div>
-            <div class="turn-text">Sure! We were hitting serious throughput bottlenecks when traffic spiked to 12k req/s. I re-architected our Redis queue into partition-aware Go worker pools with Postgres optimistic locking.</div>
+            <div class="turn-dialogue">
+              Sure. We were hitting throughput limits when traffic spiked to 12k requests per second. I re-architected our Redis queue into partition-aware Go worker pools with Postgres optimistic locking to handle concurrency safely.
+            </div>
           </div>
 
-          <div class="turn recruiter">
-            <div class="turn-meta">
-              <span class="speaker-tag">Priya (Recruiter)</span>
-              <span class="timestamp">[00:38]</span>
+          <div class="turn" id="turn-2">
+            <div class="turn-top">
+              <span class="speaker-name">Priya (Recruiter)</span>
+              <span class="turn-time">00:38</span>
             </div>
-            <div class="turn-text">How did you deal with database index bloat and query contention during high write spikes?</div>
+            <div class="turn-dialogue">
+              How did you deal with database index bloat and query contention during high write spikes?
+            </div>
           </div>
 
-          <div class="turn candidate">
-            <div class="turn-meta">
-              <span class="speaker-tag">Alex Rivera (Candidate)</span>
-              <span class="timestamp" onclick="highlightEvidence('00:45')">[00:45]</span>
+          <div class="turn" id="turn-3">
+            <div class="turn-top">
+              <span class="speaker-name candidate">Alex Rivera (Candidate)</span>
+              <span class="turn-time">00:45</span>
             </div>
-            <div class="turn-text">Great question. We isolated write-heavy telemetry from transactional rows into BRIN-indexed tables, which cut our index memory footprint by nearly 65%. I walked the team through the query optimization trade-offs before rolling out.</div>
+            <div class="turn-dialogue">
+              We isolated write-heavy telemetry from transactional rows into BRIN-indexed tables, which cut our index memory footprint by nearly 65%. I walked the team through the query optimization trade-offs before rolling out.
+            </div>
           </div>
 
-          <div class="turn recruiter">
-            <div class="turn-meta">
-              <span class="speaker-tag">Priya (Recruiter)</span>
-              <span class="timestamp">[01:10]</span>
+          <div class="turn" id="turn-4">
+            <div class="turn-top">
+              <span class="speaker-name">Priya (Recruiter)</span>
+              <span class="turn-time">01:10</span>
             </div>
-            <div class="turn-text">That's super concrete. How do you communicate those architectural trade-offs to product managers who just want features shipped faster?</div>
+            <div class="turn-dialogue">
+              How do you communicate those architectural trade-offs to product managers who just want features shipped faster?
+            </div>
           </div>
 
-          <div class="turn candidate">
-            <div class="turn-meta">
-              <span class="speaker-tag">Alex Rivera (Candidate)</span>
-              <span class="timestamp" onclick="highlightEvidence('01:15')">[01:15]</span>
+          <div class="turn" id="turn-5">
+            <div class="turn-top">
+              <span class="speaker-name candidate">Alex Rivera (Candidate)</span>
+              <span class="turn-time">01:15</span>
             </div>
-            <div class="turn-text">I translate database contention into user latency impact and AWS infrastructure cost savings. When they see latency drops from 400ms to 45ms, the business case is clear.</div>
+            <div class="turn-dialogue">
+              I translate database contention into user latency impact and AWS infrastructure cost savings. When they see latency drops from 400ms to 45ms, the business case is clear.
+            </div>
+          </div>
+
+          <div class="turn" id="turn-6">
+            <div class="turn-top">
+              <span class="speaker-name candidate">Alex Rivera (Candidate)</span>
+              <span class="turn-time">02:04</span>
+            </div>
+            <div class="turn-dialogue">
+              During our database failover incident, our team did a blameless post-mortem. I made sure to give credit to our junior on-call engineer who caught the replica lag early.
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Right: Ashby / Airtable Candidate Scorecard -->
+      <!-- Right Column: Evidence-Backed Candidate Scorecard -->
       <div class="panel">
-        <div class="candidate-hero">
-          <div class="cand-info">
-            <h2>Alex Rivera</h2>
-            <div class="cand-role">
-              <span>Senior Backend Engineer</span>
-              <span>•</span>
-              <span style="font-family:var(--mono);">ID: CAND-758638</span>
-              <span>•</span>
-              <span style="color:#6366f1;">WhipScribe Diarized</span>
-            </div>
-          </div>
-          <div class="verdict-box">
-            <div class="verdict-tag">STRONG ADVANCE (ROUND 2)</div>
-            <div class="score-headline">4.5 <span>/ 5.0</span></div>
-          </div>
+        <div class="panel-header">
+          <span class="panel-heading">Candidate Scorecard</span>
+          <span class="panel-meta">Decision Support Draft</span>
         </div>
 
-        <!-- Rubric Competencies -->
-        <h3 style="font-size:0.9rem; font-weight:700; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">
-          Competencies & Timestamped Evidence
-        </h3>
-
-        <div class="rubric-grid">
-          <div class="rubric-card" id="card-tech">
-            <div class="rubric-head">
-              <span class="rubric-title">Technical Depth</span>
-              <span class="rubric-score" style="color:#34d399;">4.5 / 5.0</span>
+        <div class="scorecard-content">
+          <!-- Candidate Header -->
+          <div class="candidate-header-row">
+            <div class="cand-title-group">
+              <h2>Alex Rivera</h2>
+              <div class="cand-meta-line">
+                <span>Senior Backend Engineer</span>
+                <span>•</span>
+                <span>ID: CAND-758638</span>
+                <span>•</span>
+                <span>Screening Interview</span>
+              </div>
             </div>
-            <div class="score-bar-bg">
-              <div class="score-bar-fill" style="width: 90%;"></div>
-            </div>
-            <div class="evidence-quote">
-              <span class="quote-sec">[00:12]</span> "Re-architected Redis queue into partition-aware Go worker pools with Postgres optimistic locking."
-            </div>
-          </div>
-
-          <div class="rubric-card" id="card-sys">
-            <div class="rubric-head">
-              <span class="rubric-title">System Design & Scalability</span>
-              <span class="rubric-score" style="color:#34d399;">4.0 / 5.0</span>
-            </div>
-            <div class="score-bar-bg">
-              <div class="score-bar-fill" style="width: 80%;"></div>
-            </div>
-            <div class="evidence-quote">
-              <span class="quote-sec">[00:45]</span> "Isolated write-heavy telemetry into BRIN-indexed tables, cutting index footprint by 65%."
+            <div class="verdict-column">
+              <div class="verdict-state">Advance to Round 2</div>
+              <div class="verdict-number">4.5 <span>/ 5.0</span></div>
             </div>
           </div>
 
-          <div class="rubric-card" id="card-comm">
-            <div class="rubric-head">
-              <span class="rubric-title">Communication & Clarity</span>
-              <span class="rubric-score" style="color:#34d399;">5.0 / 5.0</span>
+          <!-- Competencies: Clean Table Layout -->
+          <div class="section-label">Rubric & Verbatim Evidence</div>
+          <div class="competency-table">
+
+            <!-- Technical Depth -->
+            <div class="rubric-row">
+              <div class="rubric-row-header">
+                <span class="rubric-name">Technical Depth</span>
+                <span class="rubric-rating">4.5 / 5.0</span>
+              </div>
+              <div class="rubric-quote">
+                "Re-architected Redis queue into partition-aware Go worker pools with Postgres optimistic locking."
+              </div>
+              <button class="jump-link" onclick="jumpToTurn('turn-1', '00:12')">
+                → Jump to evidence [00:12]
+              </button>
             </div>
-            <div class="score-bar-bg">
-              <div class="score-bar-fill" style="width: 100%;"></div>
+
+            <!-- System Design -->
+            <div class="rubric-row">
+              <div class="rubric-row-header">
+                <span class="rubric-name">System Design & Scalability</span>
+                <span class="rubric-rating">4.0 / 5.0</span>
+              </div>
+              <div class="rubric-quote">
+                "Isolated write-heavy telemetry into BRIN-indexed tables, cutting index footprint by 65%."
+              </div>
+              <button class="jump-link" onclick="jumpToTurn('turn-3', '00:45')">
+                → Jump to evidence [00:45]
+              </button>
             </div>
-            <div class="evidence-quote">
-              <span class="quote-sec">[01:15]</span> "Translates database contention into user latency impact and AWS infrastructure cost savings."
+
+            <!-- Communication -->
+            <div class="rubric-row">
+              <div class="rubric-row-header">
+                <span class="rubric-name">Communication & Clarity</span>
+                <span class="rubric-rating">5.0 / 5.0</span>
+              </div>
+              <div class="rubric-quote">
+                "Translates database contention into user latency impact and AWS infrastructure cost savings."
+              </div>
+              <button class="jump-link" onclick="jumpToTurn('turn-5', '01:15')">
+                → Jump to evidence [01:15]
+              </button>
+            </div>
+
+            <!-- Culture -->
+            <div class="rubric-row">
+              <div class="rubric-row-header">
+                <span class="rubric-name">Culture & Collaboration</span>
+                <span class="rubric-rating">4.5 / 5.0</span>
+              </div>
+              <div class="rubric-quote">
+                "Gave credit to junior on-call engineer for catching replica lag in incident post-mortem."
+              </div>
+              <button class="jump-link" onclick="jumpToTurn('turn-6', '02:04')">
+                → Jump to evidence [02:04]
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Observations Grid -->
+          <div class="observations-layout">
+            <div class="obs-card">
+              <h4>Demonstrated Strengths</h4>
+              <ul>
+                <li>Hands-on production experience with distributed queues and Postgres index optimization.</li>
+                <li>Articulates architectural trade-offs in terms of user latency and AWS infrastructure cost.</li>
+                <li>Blameless post-mortem mindset; actively shares credit with junior teammates.</li>
+              </ul>
+            </div>
+
+            <div class="obs-card">
+              <h4>Focus for Round 2</h4>
+              <ul>
+                <li>Limited hands-on Kubernetes operator experience (primarily used managed AWS services).</li>
+                <li>Technical panel should verify concurrent race condition handling under high load.</li>
+              </ul>
             </div>
           </div>
 
-          <div class="rubric-card" id="card-cult">
-            <div class="rubric-head">
-              <span class="rubric-title">Culture & Collaboration</span>
-              <span class="rubric-score" style="color:#34d399;">4.5 / 5.0</span>
-            </div>
-            <div class="score-bar-bg">
-              <div class="score-bar-fill" style="width: 90%;"></div>
-            </div>
-            <div class="evidence-quote">
-              <span class="quote-sec">[02:04]</span> "Gave credit to previous team for joint accomplishments during incident review."
-            </div>
-          </div>
-        </div>
-
-        <!-- Strengths & Red Flags -->
-        <div class="breakdown-row">
-          <div class="list-card strengths">
-            <h4>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Key Strengths
-            </h4>
-            <ul class="bullet-list">
-              <li>Hands-on production experience with distributed systems & Postgres query optimization.</li>
-              <li>Clear communicator who asks clarifying questions before rushing to write code.</li>
-              <li>High-ownership attitude during system failure post-mortem discussions.</li>
-            </ul>
+          <!-- Scorecard Footer -->
+          <div class="scorecard-foot">
+            <span>Airtable candidate base synced • Record #rec7f91a</span>
+            <button class="foot-link" onclick="window.open('scorecard.json', '_blank')">View raw JSON</button>
           </div>
 
-          <div class="list-card flags">
-            <h4>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Red Flags / Watchouts
-            </h4>
-            <ul class="bullet-list">
-              <li>Limited direct Kubernetes operator experience (minor — primarily used managed AWS services).</li>
-              <li>Needs live coding verification on concurrent race conditions in Round 2.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Bottom Airtable Sync Bar -->
-        <div class="airtable-sync-bar">
-          <div class="sync-status">
-            <span class="status-dot"></span>
-            Airtable Candidate Base: Synced (Record #rec7f91a)
-          </div>
-          <button class="btn-airtable" onclick="alert('Synced with Airtable Base: WhipScribe Candidates 2026')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Open in Airtable
-          </button>
         </div>
       </div>
+
     </div>
   </div>
 
   <script>
-    // Generate animated waveform bars
-    const wf = document.getElementById('waveform');
-    for (let i = 0; i < 48; i++) {
-      const b = document.createElement('div');
-      b.className = 'bar' + (i < 18 ? ' active' : '');
-      b.style.height = (Math.sin(i * 0.3) * 14 + 18) + 'px';
-      wf.appendChild(b);
-    }
-
     let isPlaying = false;
-    function togglePlay() {
+    const playBtn = document.getElementById('playBtn');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const progressFill = document.getElementById('progressFill');
+
+    function togglePlayback() {
       isPlaying = !isPlaying;
-      document.getElementById('playBtn').textContent = isPlaying ? '⏸' : '▶';
+      playBtn.textContent = isPlaying ? '⏸' : '▶';
     }
 
-    function highlightEvidence(ts) {
-      alert('Jumping to audio timestamp: [' + ts + '] via WhipScribe Word Timestamps API');
+    function jumpToTurn(turnId, timestamp) {
+      isPlaying = true;
+      playBtn.textContent = '⏸';
+      timerDisplay.textContent = `${timestamp} / 23:24`;
+      
+      const timeParts = timestamp.split(':');
+      const seconds = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+      const totalSeconds = 23 * 60 + 24;
+      const pct = Math.min(100, Math.round((seconds / totalSeconds) * 100 * 4));
+      progressFill.style.width = pct + '%';
+
+      const el = document.getElementById(turnId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.querySelectorAll('.turn').forEach(t => t.classList.remove('active-target'));
+        el.classList.add('active-target');
+        setTimeout(() => el.classList.remove('active-target'), 2500);
+      }
     }
 
-    function triggerSync() {
-      const btn = document.querySelector('.btn-run');
-      btn.textContent = 'Syncing WhipScribe API...';
-      btn.style.opacity = '0.7';
+    function seekProgress(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
+      progressFill.style.width = pct + '%';
+    }
+
+    function refreshAnalysis() {
+      const btn = document.querySelector('.btn-quiet');
+      btn.textContent = 'Extracting…';
       setTimeout(() => {
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Re-Run Pipeline`;
-        btn.style.opacity = '1';
-        alert('WhipScribe API Job completed! Scorecard updated with 4 rubric evaluations and timestamped evidence.');
-      }, 1200);
+        btn.textContent = 'Extraction complete';
+        setTimeout(() => btn.textContent = 'Re-run extraction', 1800);
+      }, 700);
     }
   </script>
 </body>
