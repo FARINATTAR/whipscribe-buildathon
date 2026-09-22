@@ -5,6 +5,8 @@
 > **Recruiters shouldn't have to re-watch recordings or type notes from memory to fill ATS scorecards.**  
 > CandidateSync turns raw audio into an Ashby/Airtable candidate scorecard with 1–5 competency ratings, where **every single score is backed by a verbatim quote linked to the exact second in the recording.**
 
+> 🚀 **Live Production Demo**: Open the interactive candidate scorecard directly in your browser without installing anything → **[candidatesync.vercel.app](https://candidatesync.vercel.app)**
+
 ```
 Interview Recording
        │
@@ -22,7 +24,7 @@ Interview Recording
 Airtable / Ashby Evidence-Backed Scorecard (with 1-click jump-to-evidence)
 ```
 
-**Quick Links**: [🎥 2-Minute Demo Video](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd) · [Live Scorecard Dashboard](index.html) · [CLI Runner](runner.js) · [Make.com Scenario](scenario.json) · [Sample Scorecard](scorecard.json) · [Architecture & Failure States](#4-architecture--deterministic-vs-ai-boundary)
+**Quick Links**: [🚀 Live Production Demo](https://candidatesync.vercel.app) · [🎥 2-Minute Demo Video](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd) · [CLI Runner](runner.js) · [Make.com Scenario](scenario.json) · [Sample Scorecard](scorecard.json) · [Architecture & Failure States](#4-architecture--deterministic-vs-ai-boundary)
 
 ---
 
@@ -189,8 +191,9 @@ echo "WHIPSCRIBE_API_KEY=your_key_here" > .env
 # 4. Run pipeline
 node runner.js
 
-# 5. Open Interactive Scorecard Dashboard in browser
-open index.html # or double-click index.html
+# 5. Open Interactive Scorecard Dashboard
+# Production URL (no setup required): https://candidatesync.vercel.app
+open index.html # or double-click index.html for local view
 ```
 
 ### Verified Live Output (`scorecard.json`)
