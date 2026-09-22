@@ -120,9 +120,10 @@ flowchart TD
         I -->|Malformed| K[Schema Repair Fallback / Alert Recruiter]
     end
 
-    classDef det fill:#eef2ff,stroke:#6366f1,stroke-width:2px;
-    classDef ai fill:#ecfdf5,stroke:#10b981,stroke-width:2px;
-    classDef out fill:#fff7ed,stroke:#f97316,stroke-width:2px;
+    classDef default fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#ffffff;
+    classDef det fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ffffff;
+    classDef ai fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#ffffff;
+    classDef out fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffffff;
     class C,D,E det;
     class F,G,H ai;
     class I,J,K out;
