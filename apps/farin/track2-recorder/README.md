@@ -101,14 +101,18 @@ npm start
 
 ---
 
-## One-year vision (if this became a real product)
-Offstage becomes the default local recording layer for knowledge workers who care about privacy and reliability.
+## What We Learned & The Production Roadmap: The Zero-Bot Ecosystem
 
-Next layers:
-- Native macOS support with ScreenCaptureKit.
-- Direct one-click export into candidate scorecards (CandidateSync), Linear, or Notion.
-- Optional end-to-end encrypted backup of the local library.
-- Team compliance packs (real-time PII redaction, automatic retention rules).
+### Core Engineering Learnings
+Building Offstage revealed why meeting bots are a fundamentally flawed architecture:
+1. **The guest list is political**: In confidential board calls, sales pitches, and technical screens, admitting an uninvited bot creates friction. Capturing cleanly from the OS loopback is the only path that respects client privacy.
+2. **RAM buffers are fragile**: Streaming 1-second audio chunks directly to an open disk descriptor is the difference between a resilient professional tool and a toy that loses a 2-hour call during a browser tab crash.
+
+### Evolution & Next Milestones
+- **Native macOS Audio Tap (ScreenCaptureKit)**: Windows-first loopback is solid; bringing the same zero-bot architecture to macOS via ScreenCaptureKit.
+- **Direct CandidateSync & ATS Integration**: Automatic one-click export into candidate scorecards, Linear tickets, or Notion notes the second the call disconnects.
+- **Zero-Knowledge Encrypted Vault**: Optional end-to-end encrypted cloud backup where only the user holds the decryption keys.
+- **Enterprise Redaction Shields**: Real-time on-device regex & PII masking for credit card numbers, passwords, and sensitive client credentials.
 
 ---
 

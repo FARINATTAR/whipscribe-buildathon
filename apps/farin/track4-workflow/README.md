@@ -261,22 +261,31 @@ open index.html # or double-click index.html
 
 ---
 
-## 9. Vision & Future Scope (Where It Goes Next)
+## 9. What We Learned & The Production Roadmap: Next-Gen Talent Intelligence
 
-1. **Blind Technical Screening Pipeline**:
-   - Strip candidate names, gender pronouns, university pedigree, and demographic markers during initial rubric review.
-   - Hiring managers evaluate technical competency and evidence *before* seeing candidate identity, significantly reducing unconscious bias while keeping humans strictly accountable for the final hiring decision.
+### Key Learnings from Building CandidateSync
+Building this pipeline on top of the WhipScribe API taught us two critical operational realities about technical recruiting:
+1. **Diarization is the foundation of evaluation accuracy**: Without millisecond-accurate speaker separation, language models inevitably conflate the interviewer's framing with the candidate's answer. Leveraging WhipScribe’s real-time speaker diarization was the primary factor in generating objective rubrics that match human hiring committee standards.
+2. **Hiring teams reject black boxes**: Evaluators refuse to trust AI scores unless they can audit the candidate's exact words in under 2 seconds. The instant jump-to-evidence playback mechanism is what elevates CandidateSync from an interesting demo into an enterprise-ready recruiter tool.
 
-2. **Instant Playable Audio Soundbites (`/clips` API)**:
-   - Leverage WhipScribe's `/clips` endpoint to extract 10-to-15-second audio snippets corresponding to each evidence quote.
-   - During hiring committee debriefs, an engineering lead clicks play on the exact 15 seconds where Alex explains BRIN index trade-offs instead of listening to a full 30-minute call.
+---
 
-3. **Native ATS Webhook Ingestion (Ashby, Greenhouse, Lever)**:
-   - Zero-friction automated trigger: When a Google Meet or Zoom interview recording lands in cloud storage, the ATS webhook automatically sends the audio payload to CandidateSync.
-   - The verified scorecard populates directly into the candidate's ATS profile before the recruiter finishes their coffee.
+### Production Evolution & Enterprise Scope
 
-4. **Longitudinal Rubric Calibration**:
-   - Cross-candidate calibration: Compare candidate responses against historical benchmarks for the same role (e.g. comparing how Alex's distributed queue explanation ranks against past successful hires at the company).
+1. **Blind Technical Screening (Algorithmic Fairness)**
+   - Automatically redact candidate names, demographic indicators, vocal pitch, and educational pedigree during initial rubric review.
+   - Engineering panels evaluate raw technical competence and architecture reasoning *before* seeing demographic data, drastically reducing prestige bias while keeping human managers strictly accountable.
 
-5. **Offstage Desktop Bridge (Track 2 + Track 4 Synergy)**:
-   - Pair directly with our Track 2 desktop recorder **Offstage**: Offstage captures meeting audio crash-safely on disk without inviting a bot to the call, sends it to WhipScribe, and CandidateSync populates the scorecard the moment the meeting disconnects.
+2. **Atomic Audio Proof Chips (WhipScribe `/clips` Pipeline)**
+   - Instead of requiring reviewers to listen to a 45-minute recording, generate isolated 10-to-15-second audio snippets for each rubric competency.
+   - During hiring committee debriefs, an engineering lead clicks a single chip to hear Alex Rivera explain database partition skew without scrubbing.
+
+3. **Zero-Friction ATS Webhooks (Ashby, Greenhouse, Lever)**
+   - Enterprise hook pipeline: As soon as a recruiter's interview call disconnects, candidate audio automatically routes into CandidateSync, and the verified scorecard populates directly into the candidate’s active Ashby profile before the recruiter begins their debrief.
+
+4. **Longitudinal Cross-Candidate Calibration**
+   - Benchmark candidate responses across historical cohorts for the same role (e.g. comparing how this candidate's Kafka architecture explanation scores against past successful Staff Engineer hires at the company).
+
+5. **Direct Offstage Desktop Bridge (Zero-Bot Ecosystem)**
+   - Native synergy with our Track 2 desktop recorder **Offstage**: Offstage records the interview locally on Windows without inviting an intrusive bot into Zoom/Meet, flushes audio crash-safely, and triggers CandidateSync immediately upon call completion.
+
