@@ -28,9 +28,10 @@ Airtable / Ashby Evidence-Backed Scorecard (with 1-click jump-to-evidence)
 
 ## 🎥 2-Minute Demo Walkthrough
 
-📺 **[Click here to watch the CandidateSync 2-Minute Demo on Loom](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd)**
+[![CandidateSync 2-Minute Demo](https://cdn.loom.com/sessions/thumbnails/a81ffc0118044875b1eaf46ced92fedd-2a395f45119ab5d7.gif)](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd)
 
-*Watch the raw 30-minute interview audio get processed through the WhipScribe API, separate recruiter questions from candidate answers, and populate an evidence-backed scorecard with clickable jump-to-second verification.*
+▶️ **[Click here to watch the full 2-minute walkthrough on Loom](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd)**  
+*Watch raw 30-minute interview audio get processed through the WhipScribe API, separate recruiter questions from candidate answers, and populate an evidence-backed scorecard with clickable jump-to-second verification.*
 
 ---
 
