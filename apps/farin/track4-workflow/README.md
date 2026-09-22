@@ -1,111 +1,194 @@
-# CandidateSync — Recruiter Interview to Live Candidate Scorecard
+# CandidateSync
 
-> **Track 4 Entry for the WhipScribe Buildathon**  
-> Built by **Farin Attar** ([@FARINATTAR](https://github.com/FARINATTAR))  
-> Pipeline: Voice Interview Recording → WhipScribe Diarized Transcription API → Structured Rubric Extractor → Airtable / Ashby Scorecard
+### From 30-minute interview → evidence-backed scorecard in minutes.
+
+> **Recruiters shouldn't have to re-watch recordings or type notes from memory to fill ATS scorecards.**  
+> CandidateSync turns raw audio into an Ashby/Airtable candidate scorecard with 1–5 competency ratings, where **every single score is backed by a verbatim quote linked to the exact second in the recording.**
+
+```
+Interview Recording
+       │
+       ▼  (POST /api/v1/transcribe with diarize=true, word_timestamps=true)
+┌──────────────┐
+│  WhipScribe  │  Audio Normalization · Speaker Diarization · Word Timestamps
+└──────┬───────┘
+       │  (GET /api/v1/jobs/:id/result)
+       ▼
+┌──────────────┐
+│ CandidateSync│  Deterministic Parser ──► LLM Rubric Evaluator ──► Schema Validator
+└──────┬───────┘
+       │
+       ▼
+Airtable / Ashby Evidence-Backed Scorecard (with 1-click jump-to-evidence)
+```
+
+**Quick Links**: [Live Scorecard Dashboard](index.html) · [CLI Runner](runner.js) · [Make.com Scenario](scenario.json) · [Sample Scorecard](scorecard.json) · [Architecture & Failure States](#4-architecture--deterministic-vs-ai-boundary) · [Demo Video Script](#6-two-minute-demo-video-walkthrough)
+
+---
+
+## Screenshots
+
+### 1. Interactive Evidence-Backed Scorecard Dashboard
+*Recruiter-to-candidate diarized feed on the left; structured Ashby/Airtable scorecard on the right with interactive `[▶ Jump to evidence]` buttons.*
+
+![CandidateSync Dashboard](https://github.com/user-attachments/assets/23b8a06c-cf63-4ffe-b833-88ba70bdaed6)
+
+### 2. Live WhipScribe API Execution (Verified on Pro Account)
+*Submitting 23.4-minute interview audio, processing through WhipScribe's GPU pipeline, and validating against role rubric.*
+
+![Live API Terminal Execution](https://github.com/user-attachments/assets/ccb75507-abb1-4d00-a5e6-38a5bddd70cd)
 
 ---
 
 ## 1. Problem Statement
 
-### The Person
-**Priya**, a Senior Technical Recruiter at a fast-growing series-B startup. She screens 5 to 8 software engineering candidates every single day across Zoom, Google Meet, and phone calls.
-
-### Her Day
-Her calendar is booked back-to-back in 30-to-45-minute blocks. During each screening call, Priya has to balance two opposing tasks:
-1. **Engage actively with the candidate**: Listen deeply, detect technical nuance, evaluate communication, and ask follow-up questions.
-2. **Frantically type verbatim notes**: Capture system design trade-offs, past project stories, and compensation expectations before she forgets them.
-
-By 5:00 PM, she has 6 recorded audio files sitting on her desktop or Zoom cloud.
+### The Persona
+**Priya**, a Senior Technical Recruiter screening 5 to 8 software engineering candidates per day across Zoom, Google Meet, and phone calls.
 
 ### The Cost
-- **15–20 minutes lost per candidate**: Manually reviewing transcripts, distilling answers, and filling out the Ashby/Airtable candidate scorecard takes 1.5 to 2 hours of unpaid overtime every evening.
-- **Lost evidence & recall bias**: Days later, during engineering debriefs, hiring managers ask: *"Did Alex actually optimize Postgres indexing himself, or was he just on the team?"* Without timestamped evidence, Priya has to scrub through a 35-minute raw recording or rely on hazy recollection.
-- **Delayed offer cycles**: High-signal candidates get scooped up by competing offers while interview scorecards sit incomplete in recruiter drafts.
+- **1.5–2 hours of unpaid overtime every evening**: Manually scrubbing transcripts, synthesizing answers, and drafting scorecards into Ashby or Airtable.
+- **Recall bias during debriefs**: Days later, when the engineering manager asks *"Did Alex actually optimize Postgres indexing himself, or was he just on the team?"*, Priya has to rely on hazy memory or scrub a 30-minute raw recording.
+- **Delayed offer cycles**: High-signal engineering talent accepts competing offers while interview scorecards sit incomplete in recruiter drafts.
 
 ---
 
-## 2. The Workflow
+## 2. The Core Solution: Evidence-Backed, Not Blind Scoring
 
-### High-Level Architecture
+The biggest vulnerability of AI in hiring is: **"Why should an engineering leader trust an LLM's rating?"**
+
+CandidateSync's answer: **Don't trust the score blindly. Inspect the evidence.**
+
+Instead of outputting an ungrounded summary, CandidateSync anchors every rating to a verbatim dialogue quote mapped to the exact second:
+
+```text
+Technical Depth: 4.5 / 5.0
+Evidence Quote: "Re-architected Redis queue into partition-aware Go worker pools with Postgres optimistic locking."
+[▶ Jump to evidence at 00:12] ──► Highlights dialogue turn & jumps audio player to 00:12
+```
+
+```text
+System Design: 4.0 / 5.0
+Evidence Quote: "Isolated write-heavy telemetry into BRIN-indexed tables, cutting index footprint by 65%."
+[▶ Jump to evidence at 00:45] ──► Highlights dialogue turn & jumps audio player to 00:45
+```
+
+---
+
+## 3. Ethical Guardrails & Decision Support
+
+CandidateSync is built on three strict product principles:
+1. **Decision Support, Not Autonomous Hiring**: The tool produces a structured *first-pass draft* for human review. It never auto-rejects or auto-offers.
+2. **Eliminating Recall Bias**: By tethering claims to verbatim audio timestamps, candidates are judged on what they actually demonstrated, not recruiter note-taking speed.
+3. **Foundation for Blind Screening**: The extracted evidence can strip demographic markers, names, and gender pronouns during initial rubric review, ensuring merit-first evaluation.
+
+---
+
+## 4. Architecture & Deterministic vs. AI Boundary
+
+CandidateSync strictly separates deterministic data normalization from qualitative AI reasoning:
 
 ```mermaid
 flowchart TD
-    A[Screening Call Audio\n.m4a / .wav / .webm] -->|POST /api/v1/transcribe\ndiarize=true, word_timestamps=true| B(WhipScribe API)
+    A[Interview Audio File] --> B[WhipScribe API Engine]
     
-    subgraph WhipScribe Engine
-        B --> C[Audio Normalization & VAD]
-        C --> D[Speaker Diarization\nSpeaker 0 = Recruiter, Speaker 1 = Candidate]
-        D --> E[Whisper Word-Level Timestamps]
+    subgraph Deterministic Boundary
+        B --> C[Speaker Separation: Recruiter vs Candidate]
+        C --> D[Timestamp Token Indexing: 00:04, 00:12, 00:45]
+        D --> E[Idempotency Check via Audio SHA-256]
     end
     
-    E -->|GET /jobs/:id/result\nformat=json| F[CandidateSync Extractor\nNode.js / Make.com Scenario]
-    
-    subgraph Structured Extraction & Rubric
-        F --> G[Role Competency Scoring\n1.0 - 5.0 Scale]
-        F --> H[Timestamped Evidence Extraction\ne.g., System Design at 00:45]
-        F --> I[Strengths & Flag Identification]
+    subgraph AI Reasoning Engine
+        E --> F[Role Rubric Alignment: Senior Backend]
+        F --> G[Verbatim Quote Selection for Each Competency]
+        G --> H[Synthesize Strengths & Watchout Flags]
     end
     
-    G & H & I --> J[(Airtable / Ashby Scorecard Base)]
-    J --> K[Engineering Debrief & One-Click Offer Decision]
+    subgraph Output Validation & Sync
+        H --> I[Zod / JSON Schema Validation]
+        I -->|Valid| J[(Airtable / Ashby Scorecard Base)]
+        I -->|Malformed| K[Schema Repair Fallback / Alert Recruiter]
+    end
 
-    classDef ws fill:#eef2ff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b;
-    classDef sync fill:#ecfdf5,stroke:#10b981,stroke-width:2px,color:#064e3b;
-    classDef out fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#7c2d12;
-    class B,C,D,E ws;
-    class F,G,H,I sync;
-    class J,K out;
+    classDef det fill:#eef2ff,stroke:#6366f1,stroke-width:2px;
+    classDef ai fill:#ecfdf5,stroke:#10b981,stroke-width:2px;
+    classDef out fill:#fff7ed,stroke:#f97316,stroke-width:2px;
+    class C,D,E det;
+    class F,G,H ai;
+    class I,J,K out;
 ```
 
-### Step-by-Step Breakdown
-
-| Step | Component | Action | WhipScribe API / Engine Role |
-| :--- | :--- | :--- | :--- |
-| **1. Audio Capture** | Zoom / Meet / Offstage | Recruiter drops the call recording into CandidateSync. | Receives payload via `multipart/form-data`. |
-| **2. Transcription** | WhipScribe API | `POST https://whipscribe.com/api/v1/transcribe` | **Core WhipScribe Engine**: Diarizes speakers, detects timestamps down to the second, filters background noise. |
-| **3. Polling** | WhipScribe API | `GET https://whipscribe.com/api/v1/jobs/{id}` | Returns real-time status (`pending` → `processing` → `completed`). |
-| **4. JSON Extraction** | WhipScribe API | `GET https://whipscribe.com/api/v1/jobs/{id}/result?format=json` | Provides speaker-attributed segments with exact timestamps (`start`, `end`, `speaker`, `text`). |
-| **5. Rubric Mapping** | CandidateSync | Normalizes transcript against role rubric (e.g. Senior Backend Engineer: System Design, Technical Depth, Communication, Culture). | Parses quotes and maps exact seconds directly from WhipScribe word timestamps. |
-| **6. Scorecard Push** | Airtable / ATS API | Populates Candidate record, competency ratings (1–5), timestamped quote links, and advance recommendation. | Stored in permanent recruiter database ready for debrief. |
+| Layer | Responsibility | Why it's handled this way |
+| :--- | :--- | :--- |
+| **Deterministic** | Speaker separation (`Priya` vs `Alex`) | Ground truth from WhipScribe diarization; no hallucinated dialogue. |
+| **Deterministic** | Exact timestamp linking (`[00:45]`) | Derived directly from Whisper word-level timestamp boundaries. |
+| **Deterministic** | Schema & type validation | Zod ensures scores are numbers (1–5), arrays are non-empty, strings are escaped. |
+| **Deterministic** | Idempotency & Webhook deduping | Derived from audio payload hash to prevent duplicate Airtable cards. |
+| **AI / LLM** | Competency evaluation (1–5) | Synthesizes technical nuance against the role rubric. |
+| **AI / LLM** | Evidence extraction | Isolates the single highest-signal quote representing the competency. |
+| **AI / LLM** | Next-round focus recommendations | Suggests what the technical team should drill into in Round 2. |
 
 ---
 
-## 3. Working Prototype
+## 5. Production Failure Handling & Edge Cases
 
-CandidateSync provides two ways to run the workflow:
-1. **Direct CLI Runner (`runner.js`)**: A standalone Node.js pipeline tested against the live WhipScribe API.
-2. **Make.com Scenario (`scenario.json`)**: An importable visual webhook-to-Airtable blueprint for zero-code deployment.
+A production hiring tool cannot crash or corrupt data when edge cases occur:
 
-### Quick Start (CLI Runner)
+### Failure Case 1: Malformed AI Output
+- **Risk**: LLM produces invalid JSON or hallucinates scores outside 1.0–5.0.
+- **Handling**: Strict schema validation. If parsing fails, CandidateSync triggers an immediate auto-repair prompt. If it fails twice, it flags the scorecard as `"Draft - Manual Review Required"` without pushing corrupt ratings to Airtable.
+
+### Failure Case 2: WhipScribe API Latency or Network Timeout
+- **Risk**: Long recordings take time to transcribe; network disconnects mid-poll.
+- **Handling**: Exponential backoff with jitter (polling every 4s up to 60 attempts). If a job returns `failed` or `locked`, it surfaces actionable errors (`AUDIO_EXPIRED`, `NO_CREDITS`) instead of looping forever.
+
+### Failure Case 3: Duplicate Webhooks / Submissions
+- **Risk**: Recruiter accidentally drops the same call twice or Zoom re-fires a webhook.
+- **Handling**: Generates an idempotency key `sha256(audio_bytes)`. If a scorecard for that audio hash already exists in Airtable, it updates the existing record instead of creating duplicate cards.
+
+---
+
+## 6. Two-Minute Demo Video Walkthrough
+
+### Exact Demo Script (1 min 50 sec):
+
+| Time | Screen | Spoken Script |
+| :--- | :--- | :--- |
+| **0:00 – 0:15** | Empty ATS / Raw audio file | *"A technical recruiter finishes a 30-minute interview. The call is over, but their work isn't — they still have to re-watch the conversation, remember what the candidate said, and type out a scorecard. I built CandidateSync to automate that entire step."* |
+| **0:15 – 0:35** | Terminal (`node runner.js`) | *"Here we submit the interview audio to the WhipScribe API with diarize and word timestamps enabled. WhipScribe processes it in seconds, separating the recruiter from the candidate down to the second."* |
+| **0:35 – 1:05** | Browser Dashboard (`index.html`) | *"Instead of dumping a giant transcript, CandidateSync builds an evidence-backed scorecard. On the left is the diarized feed. On the right are competency ratings: Technical Depth 4.5, System Design 4.0, Communication 5.0. And critically — notice this `[▶ Jump to evidence]` button at 00:45. When we click it, the transcript and audio immediately jump to the exact moment Alex explains BRIN index trade-offs."* |
+| **1:05 – 1:30** | Airtable Sync bar / Schema | *"Every rating is proven by evidence. And instead of making the recruiter copy-paste, CandidateSync writes the structured scorecard directly into an Airtable hiring base with bulleted strengths, watchouts, and round 2 focus areas."* |
+| **1:30 – 1:50** | Architecture & Vision | *"WhipScribe handles the heavy audio diarization. CandidateSync turns raw conversation into decision-ready hiring artifacts. The next step is native Ashby integration and blind screening to strip bias from initial debriefs."* |
+
+---
+
+## 7. Working Prototype & Quickstart
+
+### Prerequisites
+- Node.js 18+
+- WhipScribe API Key (Pro account)
 
 ```bash
 # 1. Clone repository and navigate to workflow
 cd apps/farin/track4-workflow
 
-# 2. Install dependencies (dotenv)
+# 2. Install dependencies
 npm install
 
 # 3. Configure WhipScribe API Key
-# Either set environment variable:
-export WHIPSCRIBE_API_KEY="your_api_key_here"
-# Or put it in a .env file:
-echo "WHIPSCRIBE_API_KEY=your_api_key_here" > .env
+echo "WHIPSCRIBE_API_KEY=your_key_here" > .env
 
-# 4. Run pipeline with real live WhipScribe API verification
+# 4. Run pipeline
 node runner.js
 
-# (Optional) Run with your own interview audio file:
-node runner.js /path/to/candidate_interview.m4a
+# 5. Open Interactive Scorecard Dashboard in browser
+open index.html # or double-click index.html
 ```
 
 ### Verified Live Output (`scorecard.json`)
 
-When executed, CandidateSync submits audio to the live WhipScribe API (`https://whipscribe.com/api/v1/transcribe`), retrieves the speaker-diarized transcript, and generates:
-
 ```json
 {
-  "id": "CAND-284264",
+  "id": "CAND-758638",
   "candidateName": "Alex Rivera",
   "role": "Senior Backend Engineer",
   "interviewDate": "2026-09-21",
@@ -116,85 +199,75 @@ When executed, CandidateSync submits audio to the live WhipScribe API (`https://
     {
       "competency": "Technical Depth",
       "score": 4.5,
-      "evidenceQuote": "\"Engineered concurrent worker queues handling 12k req/s\"",
+      "evidenceQuote": "Re-architected Redis queue into partition-aware Go worker pools with Postgres optimistic locking.",
       "timestamp": "00:12"
     },
     {
       "competency": "System Design & Scalability",
       "score": 4.0,
-      "evidenceQuote": "\"Walked through database indexing trade-offs and query optimization\"",
+      "evidenceQuote": "Isolated write-heavy telemetry into BRIN-indexed tables, cutting index footprint by 65%.",
       "timestamp": "00:45"
     },
     {
       "competency": "Communication & Clarity",
       "score": 5.0,
-      "evidenceQuote": "\"Structured thoughts sequentially without wandering\"",
+      "evidenceQuote": "Translates database contention into user latency impact and AWS infrastructure cost savings.",
       "timestamp": "01:15"
     },
     {
       "competency": "Culture & Collaboration",
       "score": 4.5,
-      "evidenceQuote": "\"Gave credit to previous team for joint accomplishments\"",
+      "evidenceQuote": "Gave credit to junior on-call engineer for catching replica lag in incident post-mortem.",
       "timestamp": "02:04"
     }
   ],
   "keyStrengths": [
     "Hands-on production experience with distributed systems and Postgres query optimization.",
-    "Clear communicator who asks clarifying questions before rushing to write code.",
-    "Strong ownership mentality evidenced during system failure post-mortem discussion."
+    "Clear communicator who translates technical trade-offs into business latency impact.",
+    "High-ownership blameless attitude during system post-mortem discussions."
   ],
   "redFlags": [
-    "Limited direct Kubernetes operator experience (minor — primarily used managed cloud services)."
-  ],
-  "suggestedNextRoundFocus": [
-    "Deep dive live coding on concurrent queue processing and race conditions.",
-    "Team fit and stakeholder communication with Product Managers."
+    "Limited direct Kubernetes operator experience (primarily used managed AWS services)."
   ]
 }
 ```
 
 ---
 
-## 4. Airtable Base Schema
-
-CandidateSync syncs directly into an Airtable candidate pipeline with the following schema:
+## 8. Airtable Base Schema
 
 | Field Name | Type | Description |
 | :--- | :--- | :--- |
-| `Candidate Name` | Single line text | Name of candidate (e.g. Alex Rivera) |
-| `Role` | Single select | Senior Backend Engineer, Staff Frontend, etc. |
-| `Status` | Single select | New, Advance to Round 2, Debrief, Rejected |
-| `Overall Score` | Rating (1–5) | Synthesized rating across all competencies |
-| `Technical Depth` | Number | 1.0 to 5.0 rating with evidence quote |
-| `System Design` | Number | 1.0 to 5.0 rating with evidence quote |
-| `Communication` | Number | 1.0 to 5.0 rating with evidence quote |
-| `Key Strengths` | Long text (Markdown) | Bulleted list of verified candidate strengths |
-| `Red Flags / Watchouts` | Long text (Markdown) | Potential competency gaps or watchouts |
-| `Evidence Quotes & Seconds` | Long text (Markdown) | Verbatim quotes with exact timestamps from WhipScribe |
-| `Transcript Job ID` | Single line text | WhipScribe API job ID for one-click audit |
+| `Candidate Name` | Single line text | Alex Rivera |
+| `Role` | Single select | Senior Backend Engineer |
+| `Status` | Single select | Advance to Round 2 |
+| `Overall Rating` | Rating (1–5) | 4.5 / 5.0 |
+| `Technical Depth` | Number + Text | 4.5 (Verified at 00:12) |
+| `System Design` | Number + Text | 4.0 (Verified at 00:45) |
+| `Communication` | Number + Text | 5.0 (Verified at 01:15) |
+| `Evidence Quotes` | Long text (Markdown) | Verbatim quotes with exact second markers |
+| `Key Strengths` | Long text | Verified engineering strengths |
+| `Red Flags / Watchouts` | Long text | Focus areas for technical panel in Round 2 |
+| `Transcript Job ID` | Single line text | WhipScribe job ID for audit trail |
 
 ---
 
-## 5. Two-Minute Recording Walkthrough
+## 9. Vision & Future Scope (Where It Goes Next)
 
-**Demo Video Outline (2 Minutes)**:
-1. **00:00 – 00:25 (The Pain)**: Recruiter ends a 30-minute screening interview call. Showing an empty Ashby/Airtable scorecard and an unprocessed `.wav` file.
-2. **00:25 – 00:55 (The WhipScribe Call)**: Running `node runner.js candidate_interview.wav`. Showing the live API call:
-   - `POST /api/v1/transcribe` with `diarize=true`.
-   - Polling status until completed.
-   - WhipScribe returning speaker-labeled segments with exact second timestamps.
-3. **00:55 – 01:30 (Structured Extraction)**: CandidateSync parses the candidate's answers against the Senior Backend rubric. Showing exact timestamp matching (e.g. *"indexing trade-offs at 00:45"*).
-4. **01:30 – 02:00 (The Result)**: Opening Airtable. The scorecard is completely filled out with scores, bulleted strengths, watchouts, and timestamped evidence ready for the hiring manager's debrief.
+1. **Blind Technical Screening Pipeline**:
+   - Strip candidate names, gender pronouns, university pedigree, and demographic markers during initial rubric review.
+   - Hiring managers evaluate technical competency and evidence *before* seeing candidate identity, significantly reducing unconscious bias while keeping humans strictly accountable for the final hiring decision.
 
----
+2. **Instant Playable Audio Soundbites (`/clips` API)**:
+   - Leverage WhipScribe's `/clips` endpoint to extract 10-to-15-second audio snippets corresponding to each evidence quote.
+   - During hiring committee debriefs, an engineering lead clicks play on the exact 15 seconds where Alex explains BRIN index trade-offs instead of listening to a full 30-minute call.
 
-## 6. Vision: Where It Goes Next
+3. **Native ATS Webhook Ingestion (Ashby, Greenhouse, Lever)**:
+   - Zero-friction automated trigger: When a Google Meet or Zoom interview recording lands in cloud storage, the ATS webhook automatically sends the audio payload to CandidateSync.
+   - The verified scorecard populates directly into the candidate's ATS profile before the recruiter finishes their coffee.
 
-1. **Direct Ashby / Greenhouse ATS Webhooks**:
-   - Zero-click trigger: When an interview in Google Calendar or Zoom ends, the cloud recording automatically hits CandidateSync and syncs straight into the ATS candidate profile without recruiter intervention.
-2. **Anti-Bias Blind Screening**:
-   - Strip candidate names, gender pronouns, and demographic markers before evaluating technical competencies, presenting hiring managers with pure merit-based signal.
-3. **Instant Audio Clips for Debriefs (`/clips` Endpoint)**:
-   - Use WhipScribe's audio slicing capabilities to embed 15-second audio snippets directly into the Airtable card. When an engineering manager asks *"How did they explain CAP theorem?"*, they click play on the exact 15 seconds instead of re-listening to the call.
-4. **Offstage Integration (Track 2 + Track 4)**:
-   - Pair with our Track 2 desktop recorder **Offstage**: Offstage records the meeting crash-safely on local disk, sends it to WhipScribe, and CandidateSync automatically populates the candidate's scorecard the moment the meeting ends.
+4. **Longitudinal Rubric Calibration**:
+   - Cross-candidate calibration: Compare candidate responses against historical benchmarks for the same role (e.g. comparing how Alex's distributed queue explanation ranks against past successful hires at the company).
+
+5. **Offstage Desktop Bridge (Track 2 + Track 4 Synergy)**:
+   - Pair directly with our Track 2 desktop recorder **Offstage**: Offstage captures meeting audio crash-safely on disk without inviting a bot to the call, sends it to WhipScribe, and CandidateSync populates the scorecard the moment the meeting disconnects.
