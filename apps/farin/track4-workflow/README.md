@@ -22,7 +22,15 @@ Interview Recording
 Airtable / Ashby Evidence-Backed Scorecard (with 1-click jump-to-evidence)
 ```
 
-**Quick Links**: [Live Scorecard Dashboard](index.html) · [CLI Runner](runner.js) · [Make.com Scenario](scenario.json) · [Sample Scorecard](scorecard.json) · [Architecture & Failure States](#4-architecture--deterministic-vs-ai-boundary) · [Demo Video Script](#6-two-minute-demo-video-walkthrough)
+**Quick Links**: [🎥 2-Minute Demo Video](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd) · [Live Scorecard Dashboard](index.html) · [CLI Runner](runner.js) · [Make.com Scenario](scenario.json) · [Sample Scorecard](scorecard.json) · [Architecture & Failure States](#4-architecture--deterministic-vs-ai-boundary)
+
+---
+
+## 🎥 2-Minute Demo Walkthrough
+
+📺 **[Click here to watch the CandidateSync 2-Minute Demo on Loom](https://www.loom.com/share/a81ffc0118044875b1eaf46ced92fedd)**
+
+*Watch the raw 30-minute interview audio get processed through the WhipScribe API, separate recruiter questions from candidate answers, and populate an evidence-backed scorecard with clickable jump-to-second verification.*
 
 ---
 
