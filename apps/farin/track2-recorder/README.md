@@ -135,6 +135,18 @@ flowchart TD
 
 ---
 
+## Privacy & Recording Ethics Guardrails
+
+Offstage implements concrete privacy and data custody guardrails designed for high-stakes enterprise and recruiting environments:
+
+1. **Local-Only Audio Custody**: Raw meeting audio and transcripts are stored exclusively in your local application directory (`userData/recordings/` and `userData/sessions/`). No third-party cloud audio bucket is ever used for custody.
+2. **Hardware-Backed Credential Encryption**: API keys are never stored in plaintext JSON. Offstage encrypts keys at rest using Electron's `safeStorage` (backed by Windows DPAPI hardware-level OS user encryption).
+3. **Transparent Non-Invasive Capture**: Offstage uses native OS audio loopback (`WASAPI` / desktop capturer) and local mic input. It operates entirely client-side without injecting bots, altering call audio streams, or triggering noisy meeting-room bot permissions.
+4. **Crash-Safe Local Streaming**: In-progress calls are written to disk in 1-second chunks (`userData/sessions/<id>/chunks/*.webm`) rather than held in volatile RAM, preventing data loss without requiring external network sync during calls.
+5. **Direct Ephemeral Transcription**: Audio is transmitted directly to the WhipScribe API via HTTPS solely for speech-to-text processing and speaker diarization, with no intermediary tracking or telemetry proxies.
+
+---
+
 ## What We Learned & The Production Roadmap: The Zero-Bot Ecosystem
 
 ### Core Engineering Learnings
