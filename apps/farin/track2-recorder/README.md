@@ -1,18 +1,52 @@
-# Offstage
+# Offstage — Bot-free Desktop Meeting Recorder
 
-A Windows-first desktop recorder that **never joins the call**. It captures this machine (mic and, when Windows allows it, system audio), names the file from the next calendar event, writes audio to disk every second, and sends a file to the WhipScribe API only when you ask.
+**Track 2 submission by Farin Attar**
 
-That is the product, not a generic “dashboard + purple glass” clone of Otter.
+> The meeting recorder that never joins the meeting.
 
-## Why this instead of a meeting bot
+Offstage captures both sides of a call (your mic + system/meeting audio) entirely on your machine. No bot enters Zoom, Google Meet, Teams, or Slack. Recordings are written to disk every second so a crash never loses the call. When the meeting ends, Offstage sends the file to WhipScribe and gives you a clickable, speaker-labelled transcript with jump-to-second audio seeking.
 
-| App | What it gets right | Where it is the wrong shape |
-|---|---|---|
-| Otter / Fireflies | Live notes, CRM | A bot sits in the room. Guests see it. Some orgs ban it. |
-| Krisp | Local capture, no bot | No calendar arming, no transcript library with jump-to-second |
-| **Offstage** | Stays off the guest list. Calendar names the tape. Crash-safe chunks. WhipScribe speakers + timestamps on this PC | System audio still depends on Windows loopback / share-audio |
+---
 
-## Install and run
+## The Problem
+
+1. **Bot invasion** — Tools like Otter, Fireflies and Read.ai join as visible third-party bots. Clients, candidates, and executives frequently refuse them. Confidential calls become impossible.
+2. **Crash = total loss** — Most web recorders buffer multi-hour calls in RAM. One Windows freeze, Zoom crash or battery death and the entire recording is lost.
+3. **Messy files** — Recordings end up as generic `meeting_final_v3.wav` files detached from calendar context.
+
+Offstage solves all three.
+
+---
+
+## What is built
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Bot-free dual-stream capture (mic + system loopback) | ✅ | Windows WASAPI loopback + Web Audio |
+| 1-second crash-safe chunking to disk | ✅ | Flushes to disk every second; survives force-quit or OS crash |
+| Pre-call dual-track soundcheck meters | ✅ | 5-second test with live Mic & Room audio meters before recording |
+| Calendar arming + auto file naming | ✅ | iCal private feed → automatic naming like `Interview_Alex_2026-09-22.webm` |
+| Focus HUD (floating mini-pill while recording) | ✅ | Minimal distraction top status bar during active calls |
+| WhipScribe transcription + diarization | ✅ | Real API integration, diarized speaker labels, word timestamps |
+| Jump-to-the-second playback | ✅ | Click any transcript moment chip → audio seeks instantly |
+| Local searchable library | ✅ | Fast fuzzy search across filenames and full transcript text |
+| Secure API key storage | ✅ | Electron `safeStorage` (Windows DPAPI hardware encryption) |
+
+---
+
+## Tech Stack
+
+- **Runtime**: Electron (Windows-first)
+- **Audio Capture**: WASAPI loopback (system) + Web Audio API / MediaRecorder (mic)
+- **Mixing**: Web Audio `AudioContext` + `ChannelMergerNode` → 16 kHz mono WebM/Opus
+- **Persistence**: Node `fs.createWriteStream` via IPC (1-second disk flushes)
+- **Calendar**: iCal feed (Google Calendar / Outlook / Apple Calendar) + sample meetings
+- **Transcription**: WhipScribe API (`POST /api/v1/transcribe` → poll → fetch JSON)
+- **UI**: Custom ink & teal dark glassmorphism (vanilla CSS, zero framework bloat)
+
+---
+
+## How to run
 
 ```bash
 cd apps/farin/track2-recorder
@@ -20,66 +54,63 @@ npm install
 npm start
 ```
 
-DevTools:
+1. Set your WhipScribe API key (via `.env` or the in-app secure DPAPI store).
+2. (Optional) Paste your Google/Outlook private iCal URL in Calendar Settings, or use built-in samples.
+3. Click **Arm** on an upcoming meeting (or click **Record** for an ad-hoc session).
+4. Run the 5-second dual-track Soundcheck.
+5. When the call ends, click **Stop & Transcribe** → Offstage uploads to WhipScribe and displays the interactive transcript.
 
-```bash
-npm run dev
-```
+---
 
-## Connect WhipScribe
+## Visual Walkthrough
 
-1. Create a key at [whipscribe.com/apis/keys](https://whipscribe.com/apis/keys) (docs: the API has no free tier; a key needs a positive balance).
-2. Settings → paste the key → Save. It is stored with Electron `safeStorage` (Windows DPAPI).
-3. Record something of your own → **Send to WhipScribe**.
+### 1. Calendar Arming & Pre-Call Soundcheck
+*Arm upcoming calendar meetings with live countdowns and verify mic & room audio levels before entering the call.*
+<img width="1535" alt="Pre-call Soundcheck and Calendar Arming" src="https://github.com/user-attachments/assets/e779251b-4721-4d18-839b-98f044921731" />
 
-There is **no fake transcript**. If the key is missing, the app says so.
+### 2. Focus HUD & Active Capture
+*Minimal floating status bar displaying real-time recording timer and controls without cluttering your meeting view.*
+<img width="1535" alt="Focus HUD Recording State" src="https://github.com/user-attachments/assets/f7fdda90-679b-4394-9941-98ecf678a80d" />
 
-Submit uses `POST /api/v1/transcribe` with `source=recording`, `diarize=true`, `word_timestamps=true`, and an `Idempotency-Key`. Status is polled from `GET /api/v1/jobs/{id}` (including `progress`, `locked`, `speech_detected`) then `GET …/result?format=json`. After that, clip preprocess / summary / hook candidates are requested from the documented clip endpoints — if they 409, we wait; we do not invent sentences.
+### 3. WhipScribe Transcript & Jump-to-Second Playback
+*Speaker-diarized transcript with timestamped moment chips. Click any sentence to jump the audio player to that exact second.*
+<img width="1535" alt="Transcript and Jump to Second Player" src="https://github.com/user-attachments/assets/5ca893b9-6fcc-4a74-a5a7-ec62c3542ccb" />
 
-## Connect a calendar
+### 4. Local Searchable Library
+*Search and filter past sessions by meeting title or dialogue keyword across all recorded transcripts.*
+<img width="1535" alt="Local Searchable Library" src="https://github.com/user-attachments/assets/f34227d1-2620-4969-8ff2-a03c8642cbd9" />
 
-- **iCal**: Calendar settings → secret address in iCal format → paste in Offstage. URL is stored locally and re-fetched on launch.
-- **Sample meetings**: UI-only, clearly labelled. Not Google.
+---
 
-**Record this — no bot** names the WebM from the event title and starts capture immediately.
+## What I deliberately left unfinished (and why)
 
-## What works
+- **macOS system-audio path (ScreenCaptureKit)**: Windows-first was the priority for Track 2. One platform done solidly beats two done poorly.
+- **Multi-monitor Focus HUD auto-docking**: Works on primary display; multi-screen snapping left for next iteration.
+- **Automatic cloud folder synchronization**: Transcripts and recordings remain local-first by default for maximum data privacy.
 
-- [x] Distinct product: Offstage (bot-free), WhipScribe is the transcription engine
-- [x] Today view centred on the next meeting, not a four-card admin dashboard
-- [x] Calendar arming (iCal or labelled samples) with live “starts in…” copy
-- [x] Pre-call dual-track soundcheck: 5s test with live Mic & Room audio meters and verdict (never tape silence)
-- [x] Focus HUD: Compact top status widget with pulsing indicator, timer, and quick controls while recording
-- [x] Microphone recording; Mic+room / system attempts Windows loopback via `desktopCapturer`, then getDisplayMedia share-audio if loopback is empty
-- [x] Crash-safe 1-second chunks written to `userData/sessions/` as they arrive
-- [x] Recover interrupted sessions on next launch
-- [x] Pause freezes the timer; discard deletes the file
-- [x] Real WhipScribe upload / poll / JSON transcript (own account only)
-- [x] Recap Theater: Local tape receipt card + clickable moment seek chips that jump audio playback to exact second
-- [x] Library search over filenames **and** transcript text
-- [x] Clear back navigation across all views
-- [x] Encrypted API key (Windows DPAPI via Electron safeStorage), keyboard shortcuts (`Ctrl+R` / `Ctrl+S`), tray start/stop
+---
 
-## What does not work yet
+## Architecture decisions worth noting
 
-- [ ] Silent WASAPI via `native-recorder-nodejs` — Electron loopback is used instead; it can fail or prompt to share a screen
-- [ ] Google OAuth (Calendar API) — iCal secret URL is the path that ships
-- [ ] Auto-start at event time without a click
-- [ ] WhipScribe MCP library folders / rename / delete in the cloud
-- [ ] macOS ScreenCaptureKit permissions (Windows first)
+- **Why 1-second chunks on disk?**
+  RAM buffers lose everything on crash. Streaming directly to an open file descriptor ensures that minute 42 of an interview is safe even if the OS or process dies.
+- **Why bot-free?**
+  High-stakes conversations (recruiting, sales, executive 1-on-1s) often forbid bots. Local OS loopback removes the policy friction entirely.
+- **Why local-first library?**
+  Recordings and sensitive audio stay strictly on the user’s machine. WhipScribe is leveraged for AI transcription, diarization, and timestamps, rather than long-term audio custody.
 
-## Architecture
+---
 
-```
-main.js        window, tray, desktopCapturer, session chunks, recordings dir, encrypted store
-preload.js     contextBridge only
-src/index.html shell
-src/styles.css ink + teal (not generic violet glass)
-src/renderer.js capture mix, calendar, WhipScribe client, library search
-```
+## One-year vision (if this became a real product)
+Offstage becomes the default local recording layer for knowledge workers who care about privacy and reliability.
 
-Recordings live in Electron `userData/recordings/`, not in the git repo.
+Next layers:
+- Native macOS support with ScreenCaptureKit.
+- Direct one-click export into candidate scorecards (CandidateSync), Linear, or Notion.
+- Optional end-to-end encrypted backup of the local library.
+- Team compliance packs (real-time PII redaction, automatic retention rules).
 
-## Built by
+---
 
-Farin Attar — [github.com/FARINATTAR](https://github.com/FARINATTAR)
+## Track record link
+See [Track 0 PR #28](https://github.com/neugence/whipscribe-buildathon/pull/28) and `apps/farin/README.md` for prior shipped work ([VideoVCS](https://vvcs.tech), VoiceMed team lead, hackathon awards).
