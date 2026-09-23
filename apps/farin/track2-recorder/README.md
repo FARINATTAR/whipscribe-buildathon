@@ -62,6 +62,16 @@ npm start
 
 ---
 
+## 🎬 Video Walkthrough
+
+Watch the complete 2-minute flow in action (Pre-call Soundcheck → Calendar Arming → Focus HUD 1-second crash-safe capture → WhipScribe speaker diarization & jump-to-second playback):
+
+👉 **[Watch Offstage Demo on Loom (2 mins)](https://www.loom.com/share/1fe0056fe09c4a6cad6921dd0e41c8cd)**
+
+[![Offstage Loom Demo](https://github.com/user-attachments/assets/f7fdda90-679b-4394-9941-98ecf678a80d)](https://www.loom.com/share/1fe0056fe09c4a6cad6921dd0e41c8cd)
+
+---
+
 ## Visual Walkthrough
 
 ### 1. Calendar Arming & Pre-Call Soundcheck

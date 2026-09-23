@@ -8,7 +8,8 @@ Software engineer from Pune, India. B.E. Information Technology graduate (2026) 
 
 - **Track 0**: This introduction and my track record (see PR).
 - **Track 1**: UI bugs and proposals filed as issues (7 issues).
-- **Track 2**: [Offstage](track2-recorder/) — bot-free desktop recorder. Calendar-named files, 1-second crash-safe chunks on disk, WhipScribe transcription with jump-to-the-second. It never joins the meeting.
+- **Track 2**: [Offstage](track2-recorder/) — bot-free desktop recorder. Calendar-named files, 1-second crash-safe chunks on disk, WhipScribe transcription with jump-to-the-second. It never joins the meeting. ([2-min Video Demo](https://www.loom.com/share/1fe0056fe09c4a6cad6921dd0e41c8cd))
+- **Track 4**: [CandidateSync](track4-workflow/) — automated recruiter interview to Airtable candidate scorecard pipeline via WhipScribe API diarization & structured rubric extraction.
 
 ## How to reach me
 
