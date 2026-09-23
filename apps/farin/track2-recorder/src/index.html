@@ -60,6 +60,25 @@
     </div>
   </nav>
 
+  <!-- Focus HUD (Fixed floating pill during recording) -->
+  <div class="focus-hud hidden" id="focus-hud">
+    <div class="hud-left">
+      <span class="hud-dot"></span>
+      <span class="hud-name" id="hud-meeting-name">Recording Meeting</span>
+    </div>
+    <div class="hud-timer" id="hud-time">00:00:00</div>
+    <div class="hud-meters">
+      <span class="hud-meter-label">Mic</span>
+      <div class="hud-bar"><div class="hud-fill" id="hud-mic-fill" style="width: 0%"></div></div>
+      <span class="hud-meter-label">Room</span>
+      <div class="hud-bar"><div class="hud-fill" id="hud-sys-fill" style="width: 0%"></div></div>
+    </div>
+    <div class="hud-actions">
+      <button class="btn btn-sm btn-outline" id="btn-hud-pause">Pause</button>
+      <button class="btn btn-sm btn-danger" id="btn-hud-stop">Stop</button>
+    </div>
+  </div>
+
   <main class="content" id="content">
 
     <section class="view active" id="view-dashboard">
@@ -258,25 +277,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Focus HUD (Always-accessible during recording) -->
-    <div class="focus-hud hidden" id="focus-hud">
-      <div class="hud-left">
-        <span class="hud-dot"></span>
-        <span class="hud-name" id="hud-meeting-name">Recording Meeting</span>
-      </div>
-      <div class="hud-timer" id="hud-time">00:00:00</div>
-      <div class="hud-meters">
-        <span class="hud-meter-label">Mic</span>
-        <div class="hud-bar"><div class="hud-fill" id="hud-mic-fill" style="width: 0%"></div></div>
-        <span class="hud-meter-label">Room</span>
-        <div class="hud-bar"><div class="hud-fill" id="hud-sys-fill" style="width: 0%"></div></div>
-      </div>
-      <div class="hud-actions">
-        <button class="btn btn-sm btn-outline" id="btn-hud-pause">Pause</button>
-        <button class="btn btn-sm btn-danger" id="btn-hud-stop">Stop</button>
-      </div>
-    </div>
 
     <section class="view" id="view-library">
       <div class="view-header">

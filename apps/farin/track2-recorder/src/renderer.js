@@ -148,6 +148,12 @@ function drawLiveWaveform(analyser) {
       waveCtx.roundRect(gap + i * (barWidth + gap), (h - barH) / 2, barWidth, barH, 2);
       waveCtx.fill();
     }
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+    const avg = sum / (dataArray.length || 1);
+    const pct = Math.min(100, Math.round((avg / 64) * 100));
+    const hudMic = document.getElementById('hud-mic-fill');
+    if (hudMic) hudMic.style.width = `${pct}%`;
   }
   draw();
 }
@@ -540,6 +546,8 @@ function stopRecording() {
   recIndicator.classList.add('hidden');
   recTimeDisplay.classList.remove('recording');
   document.getElementById('focus-hud')?.classList.add('hidden');
+  const hudMic = document.getElementById('hud-mic-fill');
+  if (hudMic) hudMic.style.width = '0%';
   drawIdleWaveform();
 }
 
